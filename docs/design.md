@@ -541,7 +541,7 @@ ANTHROPIC_API_KEY=your-anthropic-api-key
 
 ## 8. 功能规划
 
-### 8.1 Phase 1（MVP，1-2月）
+### 8.1 Phase 1（MVP，预计 1-2 个月开发周期）
 
 | 功能 | 优先级 | 说明 |
 |------|--------|------|
@@ -567,17 +567,21 @@ ANTHROPIC_API_KEY=your-anthropic-api-key
 
 ## 9. 后续待细化
 
-- [ ] API 接口详细设计
-- [ ] LLM Prompt 模板设计
-- [ ] 错误处理与边界情况
-- [ ] 性能优化策略（大文件、大规模知识库）
-- [ ] 测试策略
-- [ ] 部署与分发方案
+以下内容在进入实现阶段前需要进一步细化：
+
+- [ ] **API 接口详细设计** — RESTful API 端点定义、请求/响应格式
+- [ ] **LLM Prompt 模板设计** — 编译、问答、健康检查的提示词模板
+- [ ] **错误处理与边界情况** — 网络失败、LLM 超时、文件格式不支持等
+- [ ] **性能优化策略** — 大文件处理、大规模知识库（1000+ 文档）的索引优化
+- [ ] **测试策略** — 单元测试、集成测试、E2E 测试方案
+- [ ] **部署与分发方案** — 本地运行方式（Docker/原生）、安装包制作
 
 ---
 
 ## 10. 参考资料
 
-- [LLM Knowledge Bases - 原文参考](https://x.com/karpathy/status/...) - Andrej Karpathy 的实践分享
+- 原文参考：LLM Knowledge Bases 工作流实践分享（社区讨论）
 - [Obsidian](https://obsidian.md) - 本地知识库工具
 - [LiteLLM](https://github.com/BerriAI/litellm) - 统一 LLM 接口
+- [FastAPI](https://fastapi.tiangolo.com/) - Python Web 框架
+- [React](https://react.dev/) - 前端 UI 框架
