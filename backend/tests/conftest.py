@@ -1,6 +1,7 @@
 """Pytest fixtures for LLM Knowledge Base tests."""
 
 import asyncio
+import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -8,6 +9,7 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 
+from src.config import get_settings
 from src.database import Database
 
 
@@ -17,6 +19,26 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(autouse=True)
+def setup_test_env(monkeypatch: pytest.MonkeyPatch) -> Generator[None, None, None]:
+    """Set up test environment variables and clear settings cache.
+
+    This fixture automatically sets up required environment variables for tests
+    and clears the settings cache before and after each test.
+    """
+    # Clear settings cache before test
+    get_settings.cache_clear()
+
+    # Set required environment variables
+    monkeypatch.setenv("VAULT_PATH", "/tmp/test_vault")
+    monkeypatch.setenv("APP_SECRET_KEY", "test-secret-key-for-jwt-testing")
+
+    yield
+
+    # Clear settings cache after test
+    get_settings.cache_clear()
 
 
 @pytest.fixture
