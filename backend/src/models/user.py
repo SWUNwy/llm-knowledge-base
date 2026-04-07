@@ -3,7 +3,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class User(BaseModel):
@@ -18,15 +18,15 @@ class User(BaseModel):
 class UserCreate(BaseModel):
     """创建用户请求"""
 
-    username: str
-    password: str
+    username: str = Field(..., min_length=1, description="用户名不能为空")
+    password: str = Field(..., min_length=1, description="密码不能为空")
 
 
 class UserLogin(BaseModel):
     """登录请求"""
 
-    username: str
-    password: str
+    username: str = Field(..., min_length=1, description="用户名不能为空")
+    password: str = Field(..., min_length=1, description="密码不能为空")
 
 
 class Token(BaseModel):

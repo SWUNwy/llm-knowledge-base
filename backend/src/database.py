@@ -213,6 +213,16 @@ class Database:
             row = await cursor.fetchone()
             return dict(row) if row else None
 
+    async def count_users(self) -> int:
+        """Count total number of users.
+
+        Returns:
+            Number of users in the database.
+        """
+        async with self._conn.execute("SELECT COUNT(*) FROM users") as cursor:
+            row = await cursor.fetchone()
+            return row[0] if row else 0
+
     # --- Document Operations ---
 
     async def create_document(
