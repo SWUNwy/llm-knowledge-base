@@ -8,7 +8,9 @@ from src.auth.dependencies import get_db
 from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.database import Database
+from src.routers.documents import router as document_router
 from src.routers.ingest import router as ingest_router
+from src.routers.system import router as system_router
 
 app = FastAPI(
     title="LLM Knowledge Base",
@@ -21,6 +23,12 @@ app.include_router(auth_router, prefix="/api/v1")
 
 # Register ingest router
 app.include_router(ingest_router, prefix="/api/v1")
+
+# Register document management router
+app.include_router(document_router, prefix="/api/v1")
+
+# Register system status router
+app.include_router(system_router, prefix="/api/v1")
 
 
 @app.on_event("startup")
