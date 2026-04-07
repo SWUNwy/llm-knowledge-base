@@ -8,6 +8,7 @@ from src.auth.dependencies import get_db
 from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.database import Database
+from src.routers.ingest import router as ingest_router
 
 app = FastAPI(
     title="LLM Knowledge Base",
@@ -17,6 +18,9 @@ app = FastAPI(
 
 # Register auth router
 app.include_router(auth_router, prefix="/api/v1")
+
+# Register ingest router
+app.include_router(ingest_router, prefix="/api/v1")
 
 
 @app.on_event("startup")
