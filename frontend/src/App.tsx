@@ -1,22 +1,53 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Setup from './pages/Setup';
+import Import from './pages/Import';
+import Library from './pages/Library';
+import Chat from './pages/Chat';
+import Settings from './pages/Settings';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">LLM Knowledge Base</h1>
-      <p className="text-gray-600 mb-8">
-        Frontend is running with Vite + React + TailwindCSS
-      </p>
-      <button
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        onClick={() => setCount((count) => count + 1)}
-      >
-        Count is {count}
-      </button>
-    </div>
-  )
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/setup" element={<Setup />} />
+
+          {/* Protected routes */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/import" element={<Import />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/import" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
