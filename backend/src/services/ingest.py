@@ -8,6 +8,8 @@ from typing import Optional
 from src.config import Settings, get_settings
 from src.database import Database
 from src.parsers.base import ParseResult
+from src.parsers.github import GitHubParser
+from src.parsers.video import VideoParser
 from src.parsers.web import WebParser
 from src.parsers.pdf import PDFParser
 
@@ -71,6 +73,8 @@ class IngestService:
         self.vault_path = Path(self.settings.vault_path)
         self.web_parser = WebParser()
         self.pdf_parser = PDFParser()
+        self.video_parser = VideoParser()
+        self.github_parser = GitHubParser()
 
     async def ingest_url(
         self,
@@ -173,6 +177,82 @@ class IngestService:
         await self._create_db_record(
             doc_id=doc_id,
             doc_type=doc_type,
+            path=storage_path,
+            parse_result=parse_result,
+            tags=tags,
+        )
+
+        return IngestResult(
+            success=True,
+            doc_id=doc_id,
+            title=parse_result.title,
+            path=storage_path,
+        )
+
+    async def ingest_video(
+        self,
+        url: str,
+        tags: Optional[list[str]] = None,
+    ) -> IngestResult:
+        """Import content from a video URL.
+
+        Args:
+            url: The video URL (YouTube or Bilibili).
+            tags: Optional list of tags.
+
+        Returns:
+            IngestResult with the outcome of the import.
+        """
+        parse_result = await self.video_parser.parse_url(url)
+
+        if not parse_result.success:
+            return IngestResult(success=False, error=parse_result.error)
+
+        doc_id = self._generate_id()
+        storage_path = f"raw/videos/{doc_id}.md"
+
+        await self._save_document(storage_path, parse_result, tags)
+        await self._create_db_record(
+            doc_id=doc_id,
+            doc_type="video",
+            path=storage_path,
+            parse_result=parse_result,
+            tags=tags,
+        )
+
+        return IngestResult(
+            success=True,
+            doc_id=doc_id,
+            title=parse_result.title,
+            path=storage_path,
+        )
+
+    async def ingest_github(
+        self,
+        repo_url: str,
+        tags: Optional[list[str]] = None,
+    ) -> IngestResult:
+        """Import content from a GitHub repository.
+
+        Args:
+            repo_url: The GitHub repository URL.
+            tags: Optional list of tags.
+
+        Returns:
+            IngestResult with the outcome of the import.
+        """
+        parse_result = await self.github_parser.parse_url(repo_url)
+
+        if not parse_result.success:
+            return IngestResult(success=False, error=parse_result.error)
+
+        doc_id = self._generate_id()
+        storage_path = f"raw/code/{doc_id}.md"
+
+        await self._save_document(storage_path, parse_result, tags)
+        await self._create_db_record(
+            doc_id=doc_id,
+            doc_type="code",
             path=storage_path,
             parse_result=parse_result,
             tags=tags,
