@@ -1,0 +1,1476 @@
+openapi: 3.0.3
+info:
+  title: LLM Knowledge Base API
+  description: |
+    本地运行的 LLM 知识库应用 API。
+
+    支持导入多种来源（URL、PDF、视频、代码），自动编译成 Wiki 文章，并提供智能问答功能。
+  version: 0.1.0
+  contact:
+    name: LLM Knowledge Base
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: 本地开发服务器
+
+tags:
+  - name: Auth
+    description: 认证相关接口
+  - name: Ingest
+    description: 导入相关接口
+  - name: Documents
+    description: 文档管理接口
+  - name: Compile
+    description: 编译相关接口
+  - name: QA
+    description: 问答相关接口
+  - name: Concepts
+    description: 概念管理接口
+  - name: Settings
+    description: 设置相关接口
+  - name: System
+    description: 系统状态接口
+  - name: Prompts
+    description: Prompt 模板管理接口
+
+paths:
+  # ========== 认证接口 ==========
+  /auth/setup:
+    post:
+      tags: [Auth]
+      summary: 初始化设置（首次启动）
+      description: 首次启动时创建管理员账户
+      operationId: setupAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: admin
+                password:
+                  type: string
+                  minLength: 8
+                  format: password
+                  example: "********"
+      responses:
+        '200':
+          description: 账户创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 已初始化或参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: 用户登录
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: 认证失败
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: 用户登出
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 登出成功
+
+  /auth/password:
+    put:
+      tags: [Auth]
+      summary: 修改密码
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: 密码修改成功
+        '400':
+          description: 旧密码错误
+
+  # ========== 导入接口 ==========
+  /ingest/url:
+    post:
+      tags: [Ingest]
+      summary: 导入 URL
+      operationId: ingestUrl
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestUrlRequest'
+      responses:
+        '200':
+          description: 导入成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+
+  /ingest/file:
+    post:
+      tags: [Ingest]
+      summary: 导入本地文件
+      operationId: ingestFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestFileRequest'
+      responses:
+        '200':
+          description: 导入成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+        '404':
+          description: 文件不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingest/video:
+    post:
+      tags: [Ingest]
+      summary: 导入视频
+      operationId: ingestVideo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestVideoRequest'
+      responses:
+        '200':
+          description: 导入成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+
+  /ingest/github:
+    post:
+      tags: [Ingest]
+      summary: 导入 GitHub 仓库
+      operationId: ingestGithub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestGithubRequest'
+      responses:
+        '200':
+          description: 导入成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+
+  /ingest/batch:
+    post:
+      tags: [Ingest]
+      summary: 批量导入
+      operationId: ingestBatch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestBatchRequest'
+      responses:
+        '200':
+          description: 批量导入已提交
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchImportResult'
+
+  /ingest/status/{id}:
+    get:
+      tags: [Ingest]
+      summary: 查询导入状态
+      operationId: getImportStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 导入状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportStatus'
+
+  # ========== 文档接口 ==========
+  /documents:
+    get:
+      tags: [Documents]
+      summary: 获取文档列表
+      operationId: listDocuments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [web, paper, video, code]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processed]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: 文档列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentListResponse'
+
+  /documents/{id}:
+    get:
+      tags: [Documents]
+      summary: 获取文档详情
+      operationId: getDocument
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 文档详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: 文档不存在
+
+    put:
+      tags: [Documents]
+      summary: 更新文档
+      operationId: updateDocument
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDocumentRequest'
+      responses:
+        '200':
+          description: 更新成功
+
+    delete:
+      tags: [Documents]
+      summary: 删除文档
+      operationId: deleteDocument
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 删除成功
+
+  /documents/search:
+    get:
+      tags: [Documents]
+      summary: 搜索文档
+      operationId: searchDocuments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 搜索结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+
+  # ========== 编译接口 ==========
+  /compile:
+    post:
+      tags: [Compile]
+      summary: 触发编译
+      description: |
+        小批量（≤5篇）同步返回结果，大批量（>5篇）异步处理返回 task_id
+      operationId: compileDocuments
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompileRequest'
+      responses:
+        '200':
+          description: 编译结果或任务ID
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CompileSyncResult'
+                  - $ref: '#/components/schemas/CompileAsyncResult'
+
+  /compile/tasks/{taskId}:
+    get:
+      tags: [Compile]
+      summary: 查询编译任务状态
+      operationId: getCompileTaskStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 任务状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompileTaskStatus'
+
+  /compile/tasks:
+    get:
+      tags: [Compile]
+      summary: 获取编译历史
+      operationId: listCompileTasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 编译任务列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompileTaskList'
+
+  # ========== 问答接口 ==========
+  /qa/ask:
+    post:
+      tags: [QA]
+      summary: 提问
+      description: |
+        支持流式和非流式两种模式。
+        流式模式返回 SSE (Server-Sent Events)。
+      operationId: askQuestion
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QARequest'
+      responses:
+        '200':
+          description: 回答结果（非流式）或 SSE 流（流式）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QAResponse'
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE 事件流
+
+  /qa/save:
+    post:
+      tags: [QA]
+      summary: 保存问答到知识库
+      operationId: saveQA
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveQARequest'
+      responses:
+        '200':
+          description: 保存成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveQAResult'
+
+  /qa/history:
+    get:
+      tags: [QA]
+      summary: 获取问答历史
+      operationId: getQAHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 问答历史
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QAHistoryList'
+
+  # ========== 概念接口 ==========
+  /concepts:
+    get:
+      tags: [Concepts]
+      summary: 获取概念列表
+      operationId: listConcepts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: 概念列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptList'
+
+  /concepts/{id}:
+    get:
+      tags: [Concepts]
+      summary: 获取概念详情
+      operationId: getConcept
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 概念详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Concept'
+
+  # ========== 设置接口 ==========
+  /settings:
+    get:
+      tags: [Settings]
+      summary: 获取配置
+      operationId: getSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 当前配置
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+
+    put:
+      tags: [Settings]
+      summary: 更新配置
+      operationId: updateSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSettingsRequest'
+      responses:
+        '200':
+          description: 更新成功
+
+  /settings/verify-llm:
+    post:
+      tags: [Settings]
+      summary: 验证 LLM 连接
+      operationId: verifyLLM
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyLLMRequest'
+      responses:
+        '200':
+          description: 验证结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyLLMResult'
+
+  # ========== Prompt 模板接口 ==========
+  /prompts:
+    get:
+      tags: [Prompts]
+      summary: 获取模板列表
+      operationId: listPrompts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 模板列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptTemplateList'
+
+  /prompts/{templateId}:
+    get:
+      tags: [Prompts]
+      summary: 获取模板详情
+      operationId: getPrompt
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 模板详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptTemplate'
+
+    put:
+      tags: [Prompts]
+      summary: 更新自定义模板
+      operationId: updatePrompt
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePromptRequest'
+      responses:
+        '200':
+          description: 更新成功
+
+    delete:
+      tags: [Prompts]
+      summary: 重置为默认模板
+      operationId: resetPrompt
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 重置成功
+
+  # ========== 系统接口 ==========
+  /system/status:
+    get:
+      tags: [System]
+      summary: 获取系统状态
+      operationId: getSystemStatus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 系统状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStatus'
+
+  /system/health-check:
+    post:
+      tags: [System]
+      summary: 触发健康检查
+      operationId: triggerHealthCheck
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 健康检查任务已创建
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckTask'
+
+  /system/errors:
+    get:
+      tags: [System]
+      summary: 获取错误统计
+      operationId: getErrorStats
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            default: 24h
+      responses:
+        '200':
+          description: 错误统计
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorStats'
+
+  /system/performance:
+    get:
+      tags: [System]
+      summary: 获取性能指标
+      operationId: getPerformance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 性能指标
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceStats'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ========== 通用响应 ==========
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+            details:
+              type: object
+
+    # ========== 认证相关 ==========
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        expires_in:
+          type: integer
+          example: 86400
+
+    ChangePasswordRequest:
+      type: object
+      required: [old_password, new_password]
+      properties:
+        old_password:
+          type: string
+          format: password
+        new_password:
+          type: string
+          format: password
+          minLength: 8
+
+    # ========== 导入相关 ==========
+    IngestUrlRequest:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+
+    IngestFileRequest:
+      type: object
+      required: [path]
+      properties:
+        path:
+          type: string
+          description: 本地文件路径
+        tags:
+          type: array
+          items:
+            type: string
+
+    IngestVideoRequest:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: YouTube 或 Bilibili 视频 URL
+        tags:
+          type: array
+          items:
+            type: string
+
+    IngestGithubRequest:
+      type: object
+      required: [repo_url]
+      properties:
+        repo_url:
+          type: string
+          format: uri
+        branch:
+          type: string
+          default: main
+        tags:
+          type: array
+          items:
+            type: string
+
+    IngestBatchRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [type, source]
+            properties:
+              type:
+                type: string
+                enum: [url, file, video, github]
+              source:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+
+    ImportResult:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        title:
+          type: string
+        type:
+          type: string
+        error:
+          $ref: '#/components/schemas/ErrorResponse'
+
+    BatchImportResult:
+      type: object
+      properties:
+        batch_id:
+          type: string
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportResult'
+
+    ImportStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        error:
+          type: string
+          nullable: true
+
+    # ========== 文档相关 ==========
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+          enum: [web, paper, video, code]
+        status:
+          type: string
+          enum: [pending, processed]
+        content:
+          type: string
+        source_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+        related_docs:
+          type: array
+          items:
+            type: string
+
+    DocumentListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentSummary'
+
+    DocumentSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+
+    UpdateDocumentRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [pending, processed]
+
+    SearchResult:
+      type: object
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              snippet:
+                type: string
+              score:
+                type: number
+                format: float
+
+    # ========== 编译相关 ==========
+    CompileRequest:
+      type: object
+      required: [doc_ids]
+      properties:
+        doc_ids:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        options:
+          type: object
+          properties:
+            generate_concepts:
+              type: boolean
+              default: true
+            discover_links:
+              type: boolean
+              default: true
+            output_language:
+              type: string
+              default: zh-CN
+
+    CompileSyncResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [completed]
+        compiled_count:
+          type: integer
+        wiki_docs:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              path:
+                type: string
+
+    CompileAsyncResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [queued]
+        task_id:
+          type: string
+        total_docs:
+          type: integer
+
+    CompileTaskStatus:
+      type: object
+      properties:
+        task_id:
+          type: string
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+        progress:
+          type: object
+          properties:
+            total:
+              type: integer
+            completed:
+              type: integer
+            failed:
+              type: integer
+            current_doc:
+              type: string
+        result:
+          $ref: '#/components/schemas/CompileSyncResult'
+
+    CompileTaskList:
+      type: object
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              task_id:
+                type: string
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+
+    # ========== 问答相关 ==========
+    QARequest:
+      type: object
+      required: [question]
+      properties:
+        question:
+          type: string
+          minLength: 1
+        stream:
+          type: boolean
+          default: false
+        top_k:
+          type: integer
+          default: 5
+          maximum: 20
+        save_to_kb:
+          type: boolean
+          default: false
+        output_language:
+          type: string
+          default: zh-CN
+        show_retrieval_info:
+          type: boolean
+          default: true
+
+    QAResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              relevance:
+                type: number
+                format: float
+        related_concepts:
+          type: array
+          items:
+            type: string
+
+    SaveQARequest:
+      type: object
+      required: [question, answer]
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            type: string
+
+    SaveQAResult:
+      type: object
+      properties:
+        id:
+          type: string
+        path:
+          type: string
+
+    QAHistoryList:
+      type: object
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              question:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+
+    # ========== 概念相关 ==========
+    Concept:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        wiki_path:
+          type: string
+        mention_count:
+          type: integer
+        related_concepts:
+          type: array
+          items:
+            type: string
+        source_docs:
+          type: array
+          items:
+            type: string
+
+    ConceptList:
+      type: object
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Concept'
+
+    # ========== 设置相关 ==========
+    Settings:
+      type: object
+      properties:
+        vault_path:
+          type: string
+        llm:
+          type: object
+          properties:
+            default:
+              type: string
+            providers:
+              type: object
+        embedding:
+          type: object
+          properties:
+            provider:
+              type: string
+            model:
+              type: string
+        compilation:
+          type: object
+          properties:
+            auto_compile:
+              type: boolean
+            batch_size:
+              type: integer
+        prompts:
+          type: object
+          properties:
+            output_language:
+              type: string
+            qa_show_retrieval_info:
+              type: boolean
+
+    UpdateSettingsRequest:
+      type: object
+      properties:
+        llm:
+          type: object
+          properties:
+            default:
+              type: string
+        compilation:
+          type: object
+          properties:
+            auto_compile:
+              type: boolean
+            batch_size:
+              type: integer
+        prompts:
+          type: object
+          properties:
+            output_language:
+              type: string
+            qa_show_retrieval_info:
+              type: boolean
+
+    VerifyLLMRequest:
+      type: object
+      required: [provider]
+      properties:
+        provider:
+          type: string
+          enum: [gemini, openai, anthropic, ollama]
+        api_key:
+          type: string
+        base_url:
+          type: string
+
+    VerifyLLMResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        models:
+          type: array
+          items:
+            type: string
+        error:
+          type: string
+          nullable: true
+
+    # ========== Prompt 模板相关 ==========
+    PromptTemplateList:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              customized:
+                type: boolean
+
+    PromptTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        template:
+          type: string
+        variables:
+          type: array
+          items:
+            type: string
+        customized:
+          type: boolean
+
+    UpdatePromptRequest:
+      type: object
+      required: [template]
+      properties:
+        template:
+          type: string
+
+    # ========== 系统相关 ==========
+    SystemStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        version:
+          type: string
+        stats:
+          type: object
+          properties:
+            total_docs:
+              type: integer
+            pending_docs:
+              type: integer
+            wiki_docs:
+              type: integer
+            concepts:
+              type: integer
+        active_tasks:
+          type: integer
+
+    HealthCheckTask:
+      type: object
+      properties:
+        task_id:
+          type: string
+        status:
+          type: string
+          enum: [queued]
+
+    ErrorStats:
+      type: object
+      properties:
+        period:
+          type: string
+        total_errors:
+          type: integer
+        by_category:
+          type: object
+          additionalProperties:
+            type: integer
+        by_code:
+          type: object
+          additionalProperties:
+            type: integer
+        recovery_rate:
+          type: number
+          format: float
+
+    PerformanceStats:
+      type: object
+      properties:
+        period:
+          type: string
+        metrics:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              count:
+                type: integer
+              avg_ms:
+                type: number
+              p95_ms:
+                type: number
+        cache_hit_rate:
+          type: object
+          properties:
+            embedding:
+              type: number
+              format: float
+            search:
+              type: number
+              format: float
+        resource_usage:
+          type: object
+          properties:
+            db_size_mb:
+              type: number
+            vector_cache_mb:
+              type: number
+            active_tasks:
+              type: integer

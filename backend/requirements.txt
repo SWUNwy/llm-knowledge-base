@@ -1,0 +1,26 @@
+# Web 框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+
+# 数据库
+aiosqlite>=0.19.0
+
+# LLM
+litellm>=1.20.0
+
+# 解析器
+beautifulsoup4>=4.12.0
+readability-lxml>=0.8.1
+httpx>=0.26.0
+PyMuPDF>=1.23.0
+youtube-transcript-api>=0.6.0
+GitPython>=3.1.0
+
+# 工具
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+aiofiles>=23.2.0
