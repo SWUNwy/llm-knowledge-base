@@ -9,6 +9,7 @@ import Import from './pages/Import';
 import Library from './pages/Library';
 import Chat from './pages/Chat';
 import Settings from './pages/Settings';
+import Concepts from './pages/Concepts';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ function App() {
           >
             <Route path="/import" element={<Import />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/concepts" element={<Concepts />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

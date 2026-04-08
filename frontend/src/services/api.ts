@@ -45,6 +45,42 @@ interface AskQuestionResponse {
   sources?: Array<{ id: string; title: string; snippet: string }>;
 }
 
+interface QAHistoryResponse {
+  total: number;
+  page: number;
+  limit: number;
+  items: Array<{
+    id: string;
+    question: string;
+    answer: string;
+    sources: string[];
+    created_at: string;
+  }>;
+}
+
+interface ConceptSummary {
+  id: string;
+  name: string;
+  mention_count: number;
+  created_at: string;
+}
+
+interface ConceptListResponse {
+  total: number;
+  page: number;
+  limit: number;
+  items: ConceptSummary[];
+}
+
+interface ConceptDetail {
+  id: string;
+  name: string;
+  wiki_path: string | null;
+  mention_count: number;
+  created_at: string;
+  related_documents: Array<{ id: string; title: string }>;
+}
+
 class ApiService {
   private token: string | null = null;
 
@@ -145,6 +181,20 @@ class ApiService {
     });
   }
 
+  async ingestVideo(url: string, tags?: string[]): Promise<IngestResponse> {
+    return this.request<IngestResponse>('/ingest/video', {
+      method: 'POST',
+      body: JSON.stringify({ url, tags: tags ?? [] }),
+    });
+  }
+
+  async ingestGithub(repoUrl: string, tags?: string[]): Promise<IngestResponse> {
+    return this.request<IngestResponse>('/ingest/github', {
+      method: 'POST',
+      body: JSON.stringify({ repo_url: repoUrl, tags: tags ?? [] }),
+    });
+  }
+
   // --- QA ---
 
   async askQuestion(
@@ -155,6 +205,35 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify({ question, stream: stream ?? false }),
     });
+  }
+
+  async saveQA(question: string, answer: string, sources?: string[]): Promise<{ success: boolean; id: string }> {
+    return this.request('/qa/save', {
+      method: 'POST',
+      body: JSON.stringify({ question, answer, sources: sources ?? [] }),
+    });
+  }
+
+  async getQAHistory(page?: number, limit?: number): Promise<QAHistoryResponse> {
+    const params = new URLSearchParams();
+    if (page) params.set('page', String(page));
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    return this.request<QAHistoryResponse>(`/qa/history${query ? `?${query}` : ''}`);
+  }
+
+  // --- Concepts ---
+
+  async getConcepts(page?: number, limit?: number): Promise<ConceptListResponse> {
+    const params = new URLSearchParams();
+    if (page) params.set('page', String(page));
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    return this.request<ConceptListResponse>(`/concepts${query ? `?${query}` : ''}`);
+  }
+
+  async getConcept(id: string): Promise<ConceptDetail> {
+    return this.request<ConceptDetail>(`/concepts/${id}`);
   }
 
   // --- System ---
@@ -174,4 +253,8 @@ export type {
   IngestResponse,
   StatusResponse,
   AskQuestionResponse,
+  QAHistoryResponse,
+  ConceptSummary,
+  ConceptListResponse,
+  ConceptDetail,
 };

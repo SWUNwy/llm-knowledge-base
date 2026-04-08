@@ -9,9 +9,12 @@ from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.database import Database
 from src.routers.compile import router as compile_router
+from src.routers.concepts import router as concepts_router
 from src.routers.documents import router as document_router
 from src.routers.ingest import router as ingest_router
+from src.routers.prompts import router as prompts_router
 from src.routers.qa import router as qa_router
+from src.routers.settings import router as settings_router
 from src.routers.system import router as system_router
 
 app = FastAPI(
@@ -37,6 +40,15 @@ app.include_router(qa_router, prefix="/api/v1")
 
 # Register system status router
 app.include_router(system_router, prefix="/api/v1")
+
+# Register concepts router
+app.include_router(concepts_router, prefix="/api/v1")
+
+# Register settings router
+app.include_router(settings_router, prefix="/api/v1")
+
+# Register prompts router
+app.include_router(prompts_router, prefix="/api/v1")
 
 
 @app.on_event("startup")

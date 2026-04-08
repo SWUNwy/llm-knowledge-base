@@ -6,12 +6,14 @@ import {
   Settings,
   LogOut,
   Brain,
+  Hash,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 const navItems = [
   { to: '/import', label: 'Import', icon: Upload },
   { to: '/library', label: 'Library', icon: BookOpen },
+  { to: '/concepts', label: 'Concepts', icon: Hash },
   { to: '/chat', label: 'Chat', icon: MessageSquare },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];

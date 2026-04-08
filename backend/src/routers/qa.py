@@ -2,6 +2,7 @@
 
 import json
 import logging
+import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -63,6 +64,40 @@ class QAResponse(BaseModel):
         default_factory=list,
         description="Related concepts mentioned in the answer",
     )
+
+
+class SaveQARequest(BaseModel):
+    """Request to save a Q&A interaction."""
+
+    question: str = Field(..., min_length=1, description="The question")
+    answer: str = Field(..., min_length=1, description="The answer")
+    sources: list[str] = Field(default_factory=list, description="Source document IDs")
+
+
+class SaveQAResponse(BaseModel):
+    """Response for saving a Q&A interaction."""
+
+    success: bool
+    id: str
+
+
+class QAHistoryItem(BaseModel):
+    """A single Q&A history entry."""
+
+    id: str
+    question: str
+    answer: str
+    sources: list[str] = Field(default_factory=list)
+    created_at: str
+
+
+class QAHistoryResponse(BaseModel):
+    """Paginated Q&A history response."""
+
+    total: int
+    page: int
+    limit: int
+    items: list[QAHistoryItem]
 
 
 router = APIRouter(prefix="/qa", tags=["qa"])
@@ -145,3 +180,75 @@ async def _stream_response(
         logger.error(f"QA streaming failed: {e}")
         error_data = json.dumps({"error": str(e)})
         yield f"data: {error_data}\n\n"
+
+
+@router.post("/save", response_model=SaveQAResponse)
+async def save_qa(
+    request: SaveQARequest,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+) -> SaveQAResponse:
+    """Save a Q&A interaction to the knowledge base.
+
+    Args:
+        request: Save request with question, answer, and sources.
+        user: Current authenticated user.
+        db: Database instance.
+
+    Returns:
+        Save result with the QA ID.
+    """
+    qa_id = str(uuid.uuid4())
+    await db.save_qa(
+        qa_id=qa_id,
+        question=request.question,
+        answer=request.answer,
+        sources=request.sources,
+    )
+
+    return SaveQAResponse(success=True, id=qa_id)
+
+
+@router.get("/history", response_model=QAHistoryResponse)
+async def get_qa_history(
+    page: int = 1,
+    limit: int = 20,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+) -> QAHistoryResponse:
+    """Get Q&A history with pagination.
+
+    Args:
+        page: Page number (1-indexed).
+        limit: Items per page.
+        user: Current authenticated user.
+        db: Database instance.
+
+    Returns:
+        Paginated Q&A history.
+    """
+    all_history = await db.get_qa_history(limit=1000)
+
+    # Paginate
+    total = len(all_history)
+    start = (page - 1) * limit
+    end = start + limit
+    page_items = all_history[start:end]
+
+    items = [
+        QAHistoryItem(
+            id=item["id"],
+            question=item["question"],
+            answer=item["answer"],
+            sources=item.get("sources", []),
+            created_at=item["created_at"],
+        )
+        for item in page_items
+    ]
+
+    return QAHistoryResponse(
+        total=total,
+        page=page,
+        limit=limit,
+        items=items,
+    )
