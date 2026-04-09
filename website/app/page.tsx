@@ -1,14 +1,25 @@
+import { Navbar } from "@/components/navbar";
+import { Hero } from "@/components/hero";
+import { PainPoints } from "@/components/pain-points";
+import { Features } from "@/components/features";
+import { Flow } from "@/components/flow";
+import { Pricing } from "@/components/pricing";
+import { Cta } from "@/components/cta";
+import { Footer } from "@/components/footer";
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <main className="flex flex-col items-center gap-6 px-16">
-        <h1 className="text-3xl font-semibold text-text-primary">
-          Welcome to the Website
-        </h1>
-        <p className="text-lg text-text-secondary">
-          Get started by editing the page.tsx file.
-        </p>
+    <>
+      <Navbar />
+      <main>
+        <Hero />
+        <PainPoints />
+        <Features />
+        <Flow />
+        <Pricing />
+        <Cta />
       </main>
-    </div>
+      <Footer />
+    </>
   );
 }
