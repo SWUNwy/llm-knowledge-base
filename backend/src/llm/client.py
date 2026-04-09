@@ -1,3 +1,4 @@
+from __future__ import annotations
 """LLM客户端模块
 
 使用LiteLLM提供统一的LLM调用接口，支持多种模型提供商
@@ -10,12 +11,15 @@ from typing import Any, AsyncGenerator
 import litellm
 from litellm.exceptions import (
     APIConnectionError,
+    AuthenticationError,
+    ContextWindowExceededError,
     RateLimitError,
     ServiceUnavailableError,
     Timeout,
 )
 
 from src.config import get_settings
+from src.errors import AppError, ErrorCode
 from src.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
@@ -118,9 +122,24 @@ class LLMClient:
             logger.debug(f"Generated response length: {len(content)}")
             return content
 
+        except AuthenticationError as e:
+            logger.warning("LLM authentication failed: %s", e)
+            raise AppError(ErrorCode.LLM_API_KEY_INVALID, detail=str(e))
+        except RateLimitError as e:
+            logger.warning("LLM rate limit exceeded: %s", e)
+            raise AppError(ErrorCode.LLM_RATE_LIMIT, detail=str(e))
+        except Timeout as e:
+            logger.warning("LLM request timed out: %s", e)
+            raise AppError(ErrorCode.LLM_TIMEOUT, detail=str(e))
+        except APIConnectionError as e:
+            logger.warning("LLM service connection error: %s", e)
+            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
+        except ServiceUnavailableError as e:
+            logger.warning("LLM service unavailable: %s", e)
+            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
         except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            raise
+            logger.error("Unexpected LLM error: %s", e)
+            raise AppError(ErrorCode.INTERNAL_ERROR, detail=str(e))
 
     async def stream(
         self,
@@ -165,9 +184,24 @@ class LLMClient:
                     if hasattr(delta, "content") and delta.content:
                         yield delta.content
 
+        except AuthenticationError as e:
+            logger.warning("LLM authentication failed (stream): %s", e)
+            raise AppError(ErrorCode.LLM_API_KEY_INVALID, detail=str(e))
+        except RateLimitError as e:
+            logger.warning("LLM rate limit exceeded (stream): %s", e)
+            raise AppError(ErrorCode.LLM_RATE_LIMIT, detail=str(e))
+        except Timeout as e:
+            logger.warning("LLM request timed out (stream): %s", e)
+            raise AppError(ErrorCode.LLM_TIMEOUT, detail=str(e))
+        except APIConnectionError as e:
+            logger.warning("LLM service connection error (stream): %s", e)
+            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
+        except ServiceUnavailableError as e:
+            logger.warning("LLM service unavailable (stream): %s", e)
+            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
         except Exception as e:
-            logger.error(f"Error in streaming response: {e}")
-            raise
+            logger.error("Unexpected LLM error (stream): %s", e)
+            raise AppError(ErrorCode.INTERNAL_ERROR, detail=str(e))
 
     def _build_prompt(self, template: str, variables: dict[str, Any]) -> str:
         """构建提示词

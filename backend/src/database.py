@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Database module for LLM Knowledge Base.
 
 This module provides async SQLite database operations for managing

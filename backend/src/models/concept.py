@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Concept models for the knowledge base."""
 
 from datetime import datetime

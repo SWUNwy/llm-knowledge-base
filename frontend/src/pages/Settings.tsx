@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { api } from '../services/api';
 import { Save, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import ErrorAlert from '../components/ErrorAlert';
 
 interface LLMConfig {
   provider: string;
@@ -169,10 +170,7 @@ export default function Settings() {
             </span>
           )}
           {testStatus === 'error' && (
-            <span className="flex items-center gap-1 text-sm text-red-600">
-              <XCircle className="w-4 h-4" />
-              {testMessage}
-            </span>
+            <ErrorAlert error={new Error(testMessage)} variant="inline" />
           )}
         </div>
 

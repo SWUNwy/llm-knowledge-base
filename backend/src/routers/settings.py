@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Settings router for configuration management."""
 
 import traceback

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Ingest service for importing documents from URLs and files."""
 
 import uuid

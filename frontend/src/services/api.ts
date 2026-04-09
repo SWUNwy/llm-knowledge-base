@@ -1,5 +1,21 @@
 const API_BASE = '/api/v1';
 
+// --- Error types ---
+
+export class ApiError extends Error {
+  code: string | null;
+  status: number;
+
+  constructor(message: string, code: string | null = null, status: number = 0) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
+// --- Type definitions ---
+
 interface TokenResponse {
   access_token: string;
   token_type: string;
@@ -111,10 +127,16 @@ class ApiService {
 
     if (!response.ok) {
       let message = `Request failed with status ${response.status}`;
+      let code: string | null = null;
 
       try {
         const body = await response.json();
-        if (body.detail) {
+        // New unified format: { error: { code, message } }
+        if (body.error && typeof body.error === 'object') {
+          code = body.error.code ?? null;
+          message = body.error.message ?? message;
+        } else if (body.detail) {
+          // Legacy format fallback
           message = typeof body.detail === 'string'
             ? body.detail
             : JSON.stringify(body.detail);
@@ -123,7 +145,7 @@ class ApiService {
         // Response body is not JSON, use default message
       }
 
-      throw new Error(message);
+      throw new ApiError(message, code, response.status);
     }
 
     return response.json() as Promise<T>;

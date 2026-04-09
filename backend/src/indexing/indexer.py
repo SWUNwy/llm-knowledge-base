@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Indexer service for managing full-text search indexes."""
 
 from src.database import Database

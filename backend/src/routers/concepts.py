@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Concepts router for managing knowledge base concepts."""
 
 from typing import Optional

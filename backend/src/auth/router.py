@@ -1,3 +1,4 @@
+from __future__ import annotations
 """认证路由模块"""
 
 from fastapi import APIRouter, Depends, HTTPException, status

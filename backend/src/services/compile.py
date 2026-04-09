@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Compile service for converting raw documents into wiki articles."""
 
 import json

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Prompt模板模块
 
 提供用于LLM交互的结构化Prompt模板

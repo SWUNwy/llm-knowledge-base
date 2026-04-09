@@ -2,12 +2,14 @@ import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { api, type AskQuestionResponse } from '../services/api';
 import { Send, Bot, User, ExternalLink } from 'lucide-react';
+import ErrorAlert from '../components/ErrorAlert';
 
 interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'error';
   content: string;
   sources?: AskQuestionResponse['sources'];
+  error?: unknown;
 }
 
 export default function Chat() {
@@ -33,8 +35,9 @@ export default function Chat() {
         ...prev,
         {
           id: crypto.randomUUID(),
-          role: 'assistant',
-          content: `Error: ${err instanceof Error ? err.message : 'Failed to get answer'}`,
+          role: 'error',
+          content: '',
+          error: err,
         },
       ]);
     },
@@ -82,40 +85,56 @@ export default function Chat() {
             key={msg.id}
             className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 text-blue-600" />
-              </div>
-            )}
-            <div
-              className={`max-w-[70%] rounded-xl px-4 py-3 ${
-                msg.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
-              }`}
-            >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+            {msg.role === 'error' ? (
+              <ErrorAlert
+                error={msg.error instanceof Error ? msg.error : null}
+                variant="card"
+                onRetry={() => {
+                  const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+                  if (lastUserMsg) {
+                    setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+                    askMutation.mutate(lastUserMsg.content);
+                  }
+                }}
+              />
+            ) : (
+              <>
+                {msg.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <Bot className="w-4 h-4 text-blue-600" />
+                  </div>
+                )}
+                <div
+                  className={`max-w-[70%] rounded-xl px-4 py-3 ${
+                    msg.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white border border-gray-200 text-gray-900'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
 
-              {/* Sources */}
-              {msg.sources && msg.sources.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                  <p className="text-xs font-medium text-gray-500">Sources:</p>
-                  {msg.sources.map((source) => (
-                    <div key={source.id} className="text-xs text-gray-600">
-                      <div className="flex items-center gap-1 font-medium">
-                        <ExternalLink className="w-3 h-3" />
-                        {source.title}
-                      </div>
-                      <p className="mt-0.5 line-clamp-2">{source.snippet}</p>
+                  {/* Sources */}
+                  {msg.sources && msg.sources.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                      <p className="text-xs font-medium text-gray-500">Sources:</p>
+                      {msg.sources.map((source) => (
+                        <div key={source.id} className="text-xs text-gray-600">
+                          <div className="flex items-center gap-1 font-medium">
+                            <ExternalLink className="w-3 h-3" />
+                            {source.title}
+                          </div>
+                          <p className="mt-0.5 line-clamp-2">{source.snippet}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
-            {msg.role === 'user' && (
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-                <User className="w-4 h-4 text-gray-600" />
-              </div>
+                {msg.role === 'user' && (
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                    <User className="w-4 h-4 text-gray-600" />
+                  </div>
+                )}
+              </>
             )}
           </div>
         ))}

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """文档模型"""
 
 from datetime import datetime

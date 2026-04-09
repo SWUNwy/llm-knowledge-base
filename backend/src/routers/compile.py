@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Compile router for triggering document compilation."""
 
 from pathlib import Path

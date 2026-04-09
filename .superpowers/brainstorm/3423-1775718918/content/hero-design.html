@@ -1,0 +1,123 @@
+<h2>Hero 区设计方案</h2>
+<p class="subtitle">这是用户看到的第一屏，需要在 3 秒内传达核心价值</p>
+
+<div class="cards">
+  <div class="card" data-choice="hero-a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <div class="mockup" style="margin-bottom: 16px;">
+        <div class="mockup-header">方案 A：产品截图主导</div>
+        <div class="mockup-body" style="padding: 0; background: #0f172a; overflow: hidden;">
+          <!-- Nav -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid #1e293b;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 6px;"></div>
+              <span style="color: white; font-weight: 700; font-size: 16px;">KnowledgeBase</span>
+            </div>
+            <div style="display: flex; gap: 24px; font-size: 14px; color: #94a3b8;">
+              <span>功能</span><span>定价</span><span>文档</span>
+            </div>
+            <div style="padding: 8px 20px; background: linear-gradient(135deg, #3b82f6, #7c3aed); color: white; border-radius: 6px; font-size: 13px; font-weight: 600;">免费试用</div>
+          </div>
+          <!-- Hero Content -->
+          <div style="text-align: center; padding: 60px 32px 40px;">
+            <div style="display: inline-block; padding: 6px 16px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; color: #60a5fa; font-size: 13px; margin-bottom: 20px;">AI 驱动 · 本地优先 · Obsidian 兼容</div>
+            <h1 style="font-size: 42px; font-weight: 800; color: white; margin-bottom: 16px; line-height: 1.2;">你的私有 AI 知识库</h1>
+            <p style="font-size: 18px; color: #94a3b8; max-width: 500px; margin: 0 auto 28px; line-height: 1.6;">自动将零散资料编译成结构化知识，<br>用 AI 驱动问答和持续增强。</p>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 40px;">
+              <div style="padding: 14px 28px; background: linear-gradient(135deg, #3b82f6, #7c3aed); color: white; border-radius: 10px; font-weight: 600; font-size: 15px;">免费试用 14 天</div>
+              <div style="padding: 14px 28px; border: 1px solid #334155; color: #e2e8f0; border-radius: 10px; font-weight: 500; font-size: 15px;">观看演示 ▶</div>
+            </div>
+            <!-- Product Screenshot Placeholder -->
+            <div style="max-width: 720px; margin: 0 auto; background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+              <div style="display: flex; gap: 6px; padding: 12px 16px; background: #0f172a; border-bottom: 1px solid #334155;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></div>
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></div>
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></div>
+              </div>
+              <div style="display: flex; min-height: 260px;">
+                <div style="width: 180px; background: #0f172a; border-right: 1px solid #1e293b; padding: 12px;">
+                  <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">导航</div>
+                  <div style="padding: 6px 8px; background: rgba(59,130,246,0.15); border-radius: 4px; font-size: 12px; color: #60a5fa; margin-bottom: 4px;">📥 导入</div>
+                  <div style="padding: 6px 8px; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">📚 文库</div>
+                  <div style="padding: 6px 8px; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">💬 问答</div>
+                  <div style="padding: 6px 8px; font-size: 12px; color: #94a3b8;">⚙️ 设置</div>
+                </div>
+                <div style="flex: 1; padding: 16px;">
+                  <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <div style="flex: 1; height: 36px; background: #1e293b; border-radius: 6px; border: 1px solid #334155; display: flex; align-items: center; padding: 0 12px;">
+                      <span style="font-size: 12px; color: #64748b;">粘贴 URL 或拖拽文件到此处...</span>
+                    </div>
+                    <div style="width: 64px; height: 36px; background: #3b82f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 600;">导入</div>
+                  </div>
+                  <div style="padding: 12px; background: #0f172a; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                    <div style="font-size: 12px; color: #e2e8f0; font-weight: 600; margin-bottom: 4px;">📄 Attention Is All You Need</div>
+                    <div style="font-size: 11px; color: #64748b;">已导入 · 提取 3 个概念 · 待编译</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>A. 产品截图主导</h3>
+      <p>大面积展示真实产品界面，让用户直观看到产品长什么样。适合已有可展示的产品。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="hero-b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <div class="mockup" style="margin-bottom: 16px;">
+        <div class="mockup-header">方案 B：流程动画主导</div>
+        <div class="mockup-body" style="padding: 0; background: #0f172a; overflow: hidden;">
+          <!-- Nav -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid #1e293b;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 6px;"></div>
+              <span style="color: white; font-weight: 700; font-size: 16px;">KnowledgeBase</span>
+            </div>
+            <div style="display: flex; gap: 24px; font-size: 14px; color: #94a3b8;">
+              <span>功能</span><span>定价</span><span>文档</span>
+            </div>
+            <div style="padding: 8px 20px; background: linear-gradient(135deg, #3b82f6, #7c3aed); color: white; border-radius: 6px; font-size: 13px; font-weight: 600;">免费试用</div>
+          </div>
+          <!-- Hero Content -->
+          <div style="text-align: center; padding: 60px 32px 40px;">
+            <h1 style="font-size: 42px; font-weight: 800; color: white; margin-bottom: 16px; line-height: 1.2;">资料进，知识出</h1>
+            <p style="font-size: 18px; color: #94a3b8; max-width: 500px; margin: 0 auto 36px; line-height: 1.6;">粘贴 URL、拖入 PDF、收藏视频<br>AI 自动编译成你的知识库。</p>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 40px;">
+              <div style="padding: 14px 28px; background: linear-gradient(135deg, #3b82f6, #7c3aed); color: white; border-radius: 10px; font-weight: 600; font-size: 15px;">免费试用 14 天</div>
+              <div style="padding: 14px 28px; border: 1px solid #334155; color: #e2e8f0; border-radius: 10px; font-weight: 500; font-size: 15px;">观看演示 ▶</div>
+            </div>
+            <!-- Flow Animation Placeholder -->
+            <div style="max-width: 680px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px;">
+              <!-- Input Sources -->
+              <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                <div style="width: 64px; height: 64px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 24px;">🌐</div>
+                <div style="width: 64px; height: 64px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 24px;">📄</div>
+                <div style="width: 64px; height: 64px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎬</div>
+              </div>
+              <!-- Arrow -->
+              <div style="font-size: 28px; color: #3b82f6;">→</div>
+              <!-- AI Processing -->
+              <div style="width: 120px; height: 120px; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(124,58,237,0.2)); border-radius: 50%; border: 2px solid rgba(59,130,246,0.4); display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <div style="font-size: 28px; margin-bottom: 4px;">🤖</div>
+                <div style="font-size: 11px; color: #60a5fa; font-weight: 600;">AI 编译</div>
+              </div>
+              <!-- Arrow -->
+              <div style="font-size: 28px; color: #7c3aed;">→</div>
+              <!-- Output -->
+              <div style="background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 12px; width: 200px; text-align: left;">
+                <div style="font-size: 12px; color: #e2e8f0; font-weight: 600; margin-bottom: 8px;">📚 你的知识库</div>
+                <div style="padding: 6px 8px; background: rgba(59,130,246,0.1); border-radius: 4px; font-size: 11px; color: #60a5fa; margin-bottom: 4px;">[[Transformer]]</div>
+                <div style="padding: 6px 8px; background: rgba(124,58,237,0.1); border-radius: 4px; font-size: 11px; color: #a78bfa; margin-bottom: 4px;">[[Self-Attention]]</div>
+                <div style="padding: 6px 8px; background: rgba(16,185,129,0.1); border-radius: 4px; font-size: 11px; color: #34d399;">[[NLP 概述]]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>B. 流程动画主导</h3>
+      <p>用"资料进 → AI 处理 → 知识出"的流程图代替截图。概念清晰，即使产品 UI 还在迭代也不影响。</p>
+    </div>
+  </div>
+</div>

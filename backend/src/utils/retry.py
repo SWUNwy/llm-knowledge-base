@@ -1,3 +1,4 @@
+from __future__ import annotations
 """重试工具模块
 
 提供指数退避重试功能

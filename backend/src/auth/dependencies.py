@@ -1,3 +1,4 @@
+from __future__ import annotations
 """FastAPI 认证依赖模块"""
 
 from fastapi import Depends, HTTPException, status

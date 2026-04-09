@@ -1,3 +1,4 @@
+from __future__ import annotations
 """GitHub repository parser for extracting README and documentation files."""
 
 import tempfile

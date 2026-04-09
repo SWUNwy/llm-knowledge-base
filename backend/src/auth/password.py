@@ -1,3 +1,4 @@
+from __future__ import annotations
 """密码哈希和验证"""
 
 import bcrypt

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """System status router for health and statistics."""
 
 from fastapi import APIRouter, Depends

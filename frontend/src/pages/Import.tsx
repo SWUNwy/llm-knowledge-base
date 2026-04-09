@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { api, type IngestResponse } from '../services/api';
-import { Upload, FileText, Link, Video, Github, Tag, CheckCircle, XCircle } from 'lucide-react';
+import { Upload, FileText, Link, Video, GitBranch, Tag, CheckCircle, XCircle } from 'lucide-react';
+import ErrorAlert from '../components/ErrorAlert';
 
 export default function Import() {
   const [url, setUrl] = useState('');
@@ -110,7 +111,7 @@ export default function Import() {
             {ingestUrlMutation.isPending ? 'Importing...' : 'Import URL'}
           </button>
           {ingestUrlMutation.isError && (
-            <p className="text-sm text-red-600">{ingestUrlMutation.error instanceof Error ? ingestUrlMutation.error.message : 'Import failed'}</p>
+            <ErrorAlert error={ingestUrlMutation.error} variant="inline" onDismiss={() => ingestUrlMutation.reset()} />
           )}
         </form>
 
@@ -134,7 +135,7 @@ export default function Import() {
             {ingestFileMutation.isPending ? 'Importing...' : 'Import File'}
           </button>
           {ingestFileMutation.isError && (
-            <p className="text-sm text-red-600">{ingestFileMutation.error instanceof Error ? ingestFileMutation.error.message : 'Import failed'}</p>
+            <ErrorAlert error={ingestFileMutation.error} variant="inline" onDismiss={() => ingestFileMutation.reset()} />
           )}
         </form>
 
@@ -158,14 +159,14 @@ export default function Import() {
             {ingestVideoMutation.isPending ? 'Importing...' : 'Import Video'}
           </button>
           {ingestVideoMutation.isError && (
-            <p className="text-sm text-red-600">{ingestVideoMutation.error instanceof Error ? ingestVideoMutation.error.message : 'Import failed'}</p>
+            <ErrorAlert error={ingestVideoMutation.error} variant="inline" onDismiss={() => ingestVideoMutation.reset()} />
           )}
         </form>
 
         {/* GitHub Import */}
         <form onSubmit={handleGithubSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-4">
           <div className="flex items-center gap-2 text-gray-900 font-medium">
-            <Github className="w-5 h-5 text-gray-800" />
+            <GitBranch className="w-5 h-5 text-gray-800" />
             Import from GitHub
           </div>
           <input
@@ -182,7 +183,7 @@ export default function Import() {
             {ingestGithubMutation.isPending ? 'Cloning...' : 'Import Repo'}
           </button>
           {ingestGithubMutation.isError && (
-            <p className="text-sm text-red-600">{ingestGithubMutation.error instanceof Error ? ingestGithubMutation.error.message : 'Import failed'}</p>
+            <ErrorAlert error={ingestGithubMutation.error} variant="inline" onDismiss={() => ingestGithubMutation.reset()} />
           )}
         </form>
       </div>

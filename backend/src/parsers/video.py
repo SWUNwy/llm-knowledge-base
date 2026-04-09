@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Video parser for extracting subtitles from YouTube and Bilibili."""
 
 import re

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Prompts router for managing prompt templates."""
 
 from typing import Optional

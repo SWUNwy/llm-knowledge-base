@@ -3,6 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
 import { Brain } from 'lucide-react';
+import ErrorAlert from '../components/ErrorAlert';
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -59,9 +60,7 @@ export default function Login() {
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4"
         >
           {error && (
-            <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
-              {error}
-            </div>
+            <ErrorAlert error={new Error(error)} variant="inline" />
           )}
 
           <div>

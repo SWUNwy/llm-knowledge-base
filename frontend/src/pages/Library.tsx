@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, type DocumentSummary } from '../services/api';
 import { Search, FileText, BookOpen, Video, Code, Filter } from 'lucide-react';
+import ErrorAlert from '../components/ErrorAlert';
 
 const typeIcons: Record<string, typeof FileText> = {
   web: FileText,
@@ -92,9 +93,7 @@ export default function Library() {
 
       {/* Error */}
       {error && (
-        <div className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
-          {error instanceof Error ? error.message : 'Failed to load documents'}
-        </div>
+        <ErrorAlert error={error} variant="card" onRetry={() => {}} />
       )}
 
       {/* Document list */}

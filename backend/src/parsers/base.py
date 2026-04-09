@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Parser base classes and data structures."""
 
 from dataclasses import dataclass, field

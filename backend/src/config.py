@@ -1,3 +1,4 @@
+from __future__ import annotations
 # backend/src/config.py
 """应用配置管理"""
 

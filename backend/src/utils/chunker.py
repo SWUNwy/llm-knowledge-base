@@ -1,3 +1,4 @@
+from __future__ import annotations
 """文本分块器模块
 
 将长文档拆分为适合 LLM 处理的小块，支持按字符、段落和 Markdown 标题分块。

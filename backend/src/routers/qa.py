@@ -1,3 +1,4 @@
+from __future__ import annotations
 """QA router for question-answering endpoints."""
 
 import json
@@ -11,6 +12,7 @@ from pydantic import BaseModel, Field
 
 from src.auth.dependencies import get_current_user, get_db
 from src.database import Database
+from src.errors import AppError, ErrorCode
 from src.llm.client import LLMClient
 from src.models.user import User
 from src.repositories.document_repo import DocumentRepo
@@ -149,12 +151,11 @@ async def ask_question(
             question=request.question,
             top_k=request.top_k,
         )
+    except AppError:
+        raise
     except Exception as e:
-        logger.error(f"QA ask failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate answer: {e}",
-        )
+        logger.error("QA ask failed: %s", e)
+        raise AppError(ErrorCode.INTERNAL_ERROR, detail=str(e))
 
     return result.to_dict()
 
@@ -176,9 +177,13 @@ async def _stream_response(
         ):
             data = json.dumps({"chunk": chunk})
             yield f"data: {data}\n\n"
+    except AppError as e:
+        logger.error("QA streaming failed: %s", e.detail)
+        error_data = json.dumps({"error": {"code": e.code, "message": e.message}})
+        yield f"data: {error_data}\n\n"
     except Exception as e:
-        logger.error(f"QA streaming failed: {e}")
-        error_data = json.dumps({"error": str(e)})
+        logger.error("QA streaming failed: %s", e)
+        error_data = json.dumps({"error": {"code": "INTERNAL_ERROR", "message": "An unexpected error occurred"}})
         yield f"data: {error_data}\n\n"
 
 

@@ -4,7 +4,7 @@
 
 基于 SDD Phase 1 的需求，采用渐进式策略：Phase 1 实现单页长滚动官网，Phase 2 拆分扩展为多页站点。
 
-详细设计文档见：`docs/superpowers/specs/2026-04-09-website-design.md`
+详细设计文档见：`requirements/active/R002-website/website-design.md`
 
 ## 技术栈
 

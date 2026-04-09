@@ -1,3 +1,4 @@
+from __future__ import annotations
 """认证服务模块"""
 
 from src.auth.jwt import create_token

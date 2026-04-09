@@ -1,3 +1,4 @@
+from __future__ import annotations
 """JWT Token 工具"""
 
 from datetime import datetime, timedelta, timezone

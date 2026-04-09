@@ -1,0 +1,119 @@
+<h2>定价页结构方案</h2>
+<p class="subtitle">选择最适合你产品的定价呈现方式</p>
+
+<div class="cards">
+  <div class="card" data-choice="pricing-a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <div class="mockup" style="margin-bottom: 16px;">
+        <div class="mockup-header">方案 A：三档标准</div>
+        <div class="mockup-body" style="padding: 24px; background: #f8fafc;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">选择适合你的方案</h2>
+            <p style="color: #64748b;">14 天免费试用，无需信用卡</p>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e2e8f0;">
+              <div style="font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 8px;">个人版</div>
+              <div style="font-size: 32px; font-weight: 700; color: #0f172a;">¥49<span style="font-size: 14px; color: #64748b; font-weight: 400;">/月</span></div>
+              <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; margin-bottom: 8px;">✓ 无限文档</div>
+                <div style="font-size: 13px; margin-bottom: 8px;">✓ 基础 AI 编译</div>
+                <div style="font-size: 13px;">✓ 本地存储</div>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 200px; padding: 20px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; position: relative;">
+              <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 4px 12px; background: #f59e0b; color: white; font-size: 11px; font-weight: 700; border-radius: 12px;">推荐</div>
+              <div style="font-size: 14px; color: #dbeafe; font-weight: 600; margin-bottom: 8px;">专业版</div>
+              <div style="font-size: 32px; font-weight: 700; color: white;">¥99<span style="font-size: 14px; font-weight: 400;">/月</span></div>
+              <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: 13px; color: white; margin-bottom: 8px;">✓ 个人版全部</div>
+                <div style="font-size: 13px; color: white; margin-bottom: 8px;">✓ 高级 AI 模型</div>
+                <div style="font-size: 13px; color: white; margin-bottom: 8px;">✓ 向量检索</div>
+                <div style="font-size: 13px; color: white;">✓ 优先支持</div>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 200px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e2e8f0;">
+              <div style="font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 8px;">团队版</div>
+              <div style="font-size: 32px; font-weight: 700; color: #0f172a;">¥299<span style="font-size: 14px; color: #64748b; font-weight: 400;">/月</span></div>
+              <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; margin-bottom: 8px;">✓ 专业版全部</div>
+                <div style="font-size: 13px; margin-bottom: 8px;">✓ 5 人协作</div>
+                <div style="font-size: 13px;">✓ 团队知识库</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>A. 三档标准定价</h3>
+      <p>个人/专业/团队三档，中间档突出"推荐"标签。SaaS 行业标准做法，用户认知成本低。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="pricing-b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <div class="mockup" style="margin-bottom: 16px;">
+        <div class="mockup-header">方案 B：基于用量</div>
+        <div class="mockup-body" style="padding: 24px; background: #ffffff;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">按用量付费</h2>
+            <p style="color: #64748b;">用多少付多少，灵活高效</p>
+          </div>
+          <div style="max-width: 400px; margin: 0 auto 24px; padding: 20px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 12px; color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">基础费用</div>
+            <div style="font-size: 36px; font-weight: 700; margin-bottom: 12px;">¥29<span style="font-size: 16px;">/月</span></div>
+            <div style="font-size: 13px; opacity: 0.9;">包含 100 次 AI 编译 + 500 次问答</div>
+          </div>
+          <div style="max-width: 400px; margin: 0 auto; padding: 20px; background: #f8fafc; border-radius: 12px;">
+            <div style="font-size: 14px; color: #64748b; margin-bottom: 12px;">超出用量：</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+              <span>AI 编译</span>
+              <span style="font-weight: 600;">¥0.5/次</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+              <span>问答</span>
+              <span style="font-weight: 600;">¥0.1/次</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+              <span>存储</span>
+              <span style="font-weight: 600;">¥1/GB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>B. 基础+用量计费</h3>
+      <p>固定基础费用 + 按用量付费。轻量用户友好，但理解成本较高，适合有明确计费单位的云服务。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="pricing-c" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <div class="mockup" style="margin-bottom: 16px;">
+        <div class="mockup-header">方案 C：简洁两档</div>
+        <div class="mockup-body" style="padding: 24px; background: #0f172a;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h2 style="font-size: 24px; font-weight: 700; color: white; margin-bottom: 8px;">简单的定价</h2>
+            <p style="color: #94a3b8;">14 天免费试用，无需信用卡</p>
+          </div>
+          <div style="display: flex; gap: 24px; max-width: 500px; margin: 0 auto; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; padding: 24px; background: #1e293b; border-radius: 16px; border: 2px solid #334155;">
+              <div style="font-size: 14px; color: #94a3b8; font-weight: 600; margin-bottom: 12px;">月付</div>
+              <div style="font-size: 40px; font-weight: 700; color: white; margin-bottom: 16px;">¥99<span style="font-size: 18px;">/月</span></div>
+              <div style="font-size: 13px; color: #94a3b8;">随时取消</div>
+            </div>
+            <div style="flex: 1; min-width: 200px; padding: 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 16px; position: relative;">
+              <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 4px 12px; background: #10b981; color: white; font-size: 11px; font-weight: 700; border-radius: 12px;">省 20%</div>
+              <div style="font-size: 14px; color: #dbeafe; font-weight: 600; margin-bottom: 12px;">年付</div>
+              <div style="font-size: 40px; font-weight: 700; color: white; margin-bottom: 16px;">¥799<span style="font-size: 18px;">/年</span></div>
+              <div style="font-size: 13px; color: white;">相当于 ¥66/月</div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #334155;">
+            <div style="font-size: 13px; color: #94a3b8;">所有功能全部包含，无隐藏费用</div>
+          </div>
+        </div>
+      </div>
+      <h3>C. 简洁两档</h3>
+      <p>只区分月付/年付，功能全包含。极简主义，降低决策负担，适合产品功能不复杂的情况。</p>
+    </div>
+  </div>
+</div>

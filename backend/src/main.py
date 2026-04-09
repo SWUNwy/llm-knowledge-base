@@ -1,3 +1,4 @@
+from __future__ import annotations
 """FastAPI application entry point."""
 
 from pathlib import Path
@@ -8,6 +9,7 @@ from src.auth.dependencies import get_db
 from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.database import Database
+from src.middleware.error_handler import register_error_handlers
 from src.routers.compile import router as compile_router
 from src.routers.concepts import router as concepts_router
 from src.routers.documents import router as document_router
@@ -22,6 +24,9 @@ app = FastAPI(
     description="A local-first LLM-powered knowledge base application",
     version="0.1.0",
 )
+
+# Register global error handlers
+register_error_handlers(app)
 
 # Register auth router
 app.include_router(auth_router, prefix="/api/v1")

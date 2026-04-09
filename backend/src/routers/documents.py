@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Document management router for CRUD and search operations."""
 
 from typing import Optional

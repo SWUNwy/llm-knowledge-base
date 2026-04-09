@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Web page parser using readability-lxml and BeautifulSoup."""
 
 from pathlib import Path

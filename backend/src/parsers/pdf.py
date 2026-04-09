@@ -1,3 +1,4 @@
+from __future__ import annotations
 """PDF parser using PyMuPDF (fitz) for text and metadata extraction."""
 
 from dataclasses import dataclass

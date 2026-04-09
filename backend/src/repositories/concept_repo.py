@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Concept repository for database operations."""
 
 import uuid

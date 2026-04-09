@@ -1,3 +1,4 @@
+from __future__ import annotations
 """QA service for answering questions using retrieved documents."""
 
 import logging

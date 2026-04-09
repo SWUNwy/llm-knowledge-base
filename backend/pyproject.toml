@@ -3,7 +3,7 @@ name = "llm-knowledge-base"
 version = "0.1.0"
 description = "A local-first LLM-powered knowledge base application"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
     {name = "LLM Knowledge Base Team"}
