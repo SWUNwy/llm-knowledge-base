@@ -79,10 +79,10 @@ llm-knowledge-base/
 │   └── src/           # 源代码
 ├── docs/              # 文档
 │   ├── api.yaml       # OpenAPI 规范
-│   └── design.md      # 设计文档
-├── requirements/      # Spec SDD 文档
-│   └── active/
-│       └── R001-llm-knowledge-base/
+│   ├── design.md      # 设计文档
+│   ├── project-overview.md # 项目全景复盘
+│   └── requirements/  # 需求文档（Spec SDD）
+│       └── active/    # 进行中的需求
 ├── scripts/           # 工具脚本
 ├── .env.example       # 环境变量模板
 └── README.md
@@ -131,10 +131,12 @@ npm run lint -- --fix
 
 ## 文档
 
-- [产品需求文档](requirements/active/R001-llm-knowledge-base/proposal.md)
-- [技术设计文档](requirements/active/R001-llm-knowledge-base/design.md)
-- [任务清单](requirements/active/R001-llm-knowledge-base/tasks.md)
-- [测试用例](requirements/active/R001-llm-knowledge-base/test-cases.md)
+- [产品需求文档](docs/requirements/active/R001-llm-knowledge-base/proposal.md)
+- [技术设计文档](docs/requirements/active/R001-llm-knowledge-base/design.md)
+- [任务清单](docs/requirements/active/R001-llm-knowledge-base/tasks.md)
+- [测试用例](docs/requirements/active/R001-llm-knowledge-base/test-cases.md)
+- [项目全景复盘](docs/project-overview.md)
+- [商业化串联设计](docs/requirements/active/R003-commercial-integration/proposal.md)
 
 ## 许可证
 
