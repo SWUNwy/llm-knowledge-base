@@ -22,7 +22,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "KnowledgeBase",
+              applicationCategory: "Knowledge Management",
+              description: "AI 驱动的本地知识库。自动将零散资料编译成结构化知识，用 AI 驱动问答和持续增强。",
+              offers: {
+                "@type": "AggregateOffer",
+                lowPrice: "49",
+                highPrice: "299",
+                priceCurrency: "CNY",
+              },
+            }),
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
