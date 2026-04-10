@@ -74,6 +74,46 @@ class LLMClient:
             ServiceUnavailableError,
         ),
     )
+    async def _raw_completion(
+        self,
+        model_name: str,
+        messages: list[dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+        api_base: str | None,
+    ) -> str:
+        """Raw LLM completion call. Retryable exceptions propagate to decorator."""
+        response = await litellm.acompletion(
+            model=model_name,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            api_base=api_base,
+        )
+
+        content = response.choices[0].message.content
+        if content is None:
+            raise ValueError("LLM returned empty response")
+
+        return content
+
+    async def _to_app_error(self, exc: Exception) -> AppError:
+        """Convert litellm exceptions to AppError."""
+        if isinstance(exc, AuthenticationError):
+            logger.warning("LLM authentication failed: %s", exc)
+            return AppError(ErrorCode.LLM_API_KEY_INVALID, detail=str(exc))
+        if isinstance(exc, RateLimitError):
+            logger.warning("LLM rate limit exceeded: %s", exc)
+            return AppError(ErrorCode.LLM_RATE_LIMIT, detail=str(exc))
+        if isinstance(exc, Timeout):
+            logger.warning("LLM request timed out: %s", exc)
+            return AppError(ErrorCode.LLM_TIMEOUT, detail=str(exc))
+        if isinstance(exc, (APIConnectionError, ServiceUnavailableError)):
+            logger.warning("LLM service unavailable: %s", exc)
+            return AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(exc))
+        logger.error("Unexpected LLM error: %s", exc)
+        return AppError(ErrorCode.INTERNAL_ERROR, detail=str(exc))
+
     async def generate(
         self,
         prompt: str,
@@ -93,9 +133,7 @@ class LLMClient:
             生成的文本响应
 
         Raises:
-            RateLimitError: API请求频率限制
-            Timeout: 请求超时
-            APIConnectionError: API连接错误
+            AppError: LLM调用失败时抛出应用级错误
         """
         model_name = model or self.default_model
 
@@ -107,39 +145,18 @@ class LLMClient:
         logger.debug(f"Generating with model: {model_name}, temperature: {temperature}")
 
         try:
-            response = await litellm.acompletion(
-                model=model_name,
+            content = await self._raw_completion(
+                model_name=model_name,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=temperature,
                 max_tokens=max_tokens,
                 api_base=api_base,
             )
-
-            content = response.choices[0].message.content
-            if content is None:
-                raise ValueError("LLM returned empty response")
-
             logger.debug(f"Generated response length: {len(content)}")
             return content
-
-        except AuthenticationError as e:
-            logger.warning("LLM authentication failed: %s", e)
-            raise AppError(ErrorCode.LLM_API_KEY_INVALID, detail=str(e))
-        except RateLimitError as e:
-            logger.warning("LLM rate limit exceeded: %s", e)
-            raise AppError(ErrorCode.LLM_RATE_LIMIT, detail=str(e))
-        except Timeout as e:
-            logger.warning("LLM request timed out: %s", e)
-            raise AppError(ErrorCode.LLM_TIMEOUT, detail=str(e))
-        except APIConnectionError as e:
-            logger.warning("LLM service connection error: %s", e)
-            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
-        except ServiceUnavailableError as e:
-            logger.warning("LLM service unavailable: %s", e)
-            raise AppError(ErrorCode.LLM_SERVICE_DOWN, detail=str(e))
-        except Exception as e:
-            logger.error("Unexpected LLM error: %s", e)
-            raise AppError(ErrorCode.INTERNAL_ERROR, detail=str(e))
+        except (AuthenticationError, RateLimitError, Timeout,
+                APIConnectionError, ServiceUnavailableError, Exception) as e:
+            raise await self._to_app_error(e)
 
     async def stream(
         self,
