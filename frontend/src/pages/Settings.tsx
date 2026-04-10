@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { api } from '../services/api';
+import { getUsage } from '../services/cloudApi';
 import { Save, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import ErrorAlert from '../components/ErrorAlert';
 
@@ -17,6 +18,17 @@ export default function Settings() {
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [testMessage, setTestMessage] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  // SaaS plan and usage state
+  const [tier, setTier] = useState<string>(localStorage.getItem('user_tier') || 'trial');
+  const [usage, setUsage] = useState<{ compile: number; qa: number } | null>(null);
+
+  useEffect(() => {
+    const licenseToken = localStorage.getItem('license_token');
+    if (licenseToken) {
+      getUsage(licenseToken).then(setUsage).catch(console.error);
+    }
+  }, []);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -67,6 +79,27 @@ export default function Settings() {
   return (
     <div className="max-w-2xl mx-auto p-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+
+      {/* Plan and Usage Section */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+        <h2 className="text-xl font-semibold mb-4">Current Plan</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-2xl font-bold capitalize text-gray-900">{tier}</p>
+            {usage && (
+              <p className="text-sm text-gray-600 mt-1">
+                This month: {usage.compile} compilations, {usage.qa} Q&A
+              </p>
+            )}
+          </div>
+          <button
+            onClick={() => window.open('https://knowledgebase.ai/dashboard', '_blank')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+          >
+            Manage Plan
+          </button>
+        </div>
+      </div>
 
       <form
         onSubmit={handleSave}
