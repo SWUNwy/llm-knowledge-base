@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     # 日志配置
     log_level: str = "INFO"
 
+    # Cloud API Configuration (SaaS mode)
+    cloud_api_url: Optional[str] = "https://knowledgebase.ai"  # Default, override with env
+    license_token_path: str = ".license_token"  # Local cache file
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
