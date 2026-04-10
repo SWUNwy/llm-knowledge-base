@@ -21,10 +21,10 @@
 
 | 模块 | 技术栈 | 代码量 | 状态 |
 |------|--------|--------|------|
-| 后端 | Python FastAPI + SQLite/FTS5 + LiteLLM | ~17K 行 | 骨架已搭建，核心业务逻辑未完成 |
-| 前端 | React 18 + Vite + TailwindCSS + React Query | ~5.6K 行 | 6 个页面骨架已有，功能未接通 |
-| 官网 | Next.js + TypeScript + TailwindCSS + Framer Motion | - | Phase 1 MVP 已完成 |
-| 测试 | Pytest + 计划 Playwright E2E | 17 个文件 | 单元/集成测试框架已建，覆盖率待提升 |
+| 后端 | Python FastAPI + SQLite/FTS5 + LiteLLM | ~6.1K 行 | 核心业务逻辑已完成 |
+| 前端 | React 18 + Vite + TailwindCSS + React Query | ~1.9K 行 | 6 个页面 UI 完成，待与后端对接 |
+| 官网 | Next.js + TypeScript + TailwindCSS + Framer Motion | ~870 行 | Phase 1 MVP 已完成 |
+| 测试 | Pytest + 计划 Playwright E2E | 17 个文件 (~4K 行) | 单元/集成测试框架已建，覆盖率待提升 |
 | 文档/规范 | proposal + design + tasks + API spec | - | 完整 |
 
 ### 2.2 后端模块明细
@@ -108,12 +108,12 @@ Parser（4 种）：web、pdf、video、github
 
 ## 五、待完成事项
 
-### Phase 3 实施开发（全部未完成）
+### Phase 3 实施开发（进行中）
 
-- [ ] 后端核心业务逻辑（编译链路、问答链路、导入完整流程）
-- [ ] 前端功能接通（与后端 API 对接）
-- [ ] E2E 测试
-- [ ] 部署方案（Docker）
+- [x] 后端核心业务逻辑（编译链路、问答链路、导入完整流程）— **已完成**
+- [ ] 前端功能与后端 API 对接 — **进行中**
+- [ ] E2E 测试 — 待开始
+- [ ] 部署方案（Docker）— 待开始
 
 ### 官网与主项目串联
 
