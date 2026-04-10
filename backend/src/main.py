@@ -9,6 +9,7 @@ from src.auth.dependencies import get_db
 from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.database import Database
+from src.license.manager import LicenseManager
 from src.middleware.error_handler import register_error_handlers
 from src.routers.compile import router as compile_router
 from src.routers.concepts import router as concepts_router
@@ -55,6 +56,9 @@ app.include_router(settings_router, prefix="/api/v1")
 # Register prompts router
 app.include_router(prompts_router, prefix="/api/v1")
 
+# Store license manager in app state
+app.state.license_manager: LicenseManager | None = None
+
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -79,6 +83,19 @@ async def startup() -> None:
         return app.state.db
 
     app.dependency_overrides[get_db] = _get_db
+
+    # Initialize license manager for SaaS mode
+    license_mgr = LicenseManager(vault_path)
+    app.state.license_manager = license_mgr
+
+    # Verify license on startup (non-blocking)
+    # If license is invalid, the app will still start but
+    # API endpoints will check license before processing
+    try:
+        await license_mgr.verify()
+    except Exception:
+        # Network error or other issue - will use cached data
+        pass
 
 
 @app.on_event("shutdown")
