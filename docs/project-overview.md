@@ -1,6 +1,6 @@
 # LLM Knowledge Base - 项目全景复盘
 
-> 更新日期：2026-04-09
+> 更新日期：2026-04-11
 > 状态：Phase 3 实施开发待完成
 
 ---
@@ -22,8 +22,9 @@
 | 模块 | 技术栈 | 代码量 | 状态 |
 |------|--------|--------|------|
 | 后端 | Python FastAPI + SQLite/FTS5 + LiteLLM | ~6.1K 行 | 核心业务逻辑已完成 |
-| 前端 | React 18 + Vite + TailwindCSS + React Query | ~1.9K 行 | 6 个页面 UI 完成，待与后端对接 |
-| 官网 | Next.js + TypeScript + TailwindCSS + Framer Motion | ~870 行 | Phase 1 MVP 已完成 |
+| 前端 | React 18 + Vite + TailwindCSS + React Query | ~1.9K 行 | 6 个页面 UI 完成，API 对接已完成 |
+| 官网 (SaaS) | Next.js + TypeScript + TailwindCSS + Framer Motion | ~870 行 | 注册/登录/Dashboard/Pricing 已完成 |
+| 官网 (营销) | Next.js + TypeScript + TailwindCSS + Framer Motion | ~870 行 | Phase 1 MVP 已完成 |
 | 测试 | Pytest + 计划 Playwright E2E | 17 个文件 (~4K 行) | 单元/集成测试框架已建，覆盖率待提升 |
 | 文档/规范 | proposal + design + tasks + API spec | - | 完整 |
 
@@ -111,14 +112,19 @@ Parser（4 种）：web、pdf、video、github
 ### Phase 3 实施开发（进行中）
 
 - [x] 后端核心业务逻辑（编译链路、问答链路、导入完整流程）— **已完成**
-- [ ] 前端功能与后端 API 对接 — **进行中**
+- [x] 前端功能与后端 API 对接 — **已完成（R004）**
+- [x] Docker Compose 本地开发环境 — **已完成**
 - [ ] E2E 测试 — 待开始
-- [ ] 部署方案（Docker）— 待开始
 
-### 官网与主项目串联
+### 官网与主应用串联
 
-- [ ] 官网 → 应用入口的完整用户旅程
-- [ ] 商业化闭环（注册、付费、License 验证）
+- [x] 注册/登录/Dashboard 页面 — **已完成**
+- [x] Pricing/CTA 按钮串联 Stripe — **已完成**
+- [x] Navbar 登录状态展示 — **已完成**
+
+### 商业化闭环
+
+- [ ] 商业化闭环（注册、付费、License 验证）— **部分完成（API + 页面已完成，Stripe 产品尚未配置）**
 
 ---
 
