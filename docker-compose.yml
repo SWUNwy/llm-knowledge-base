@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./tmp-vault:/app/vault
+    env_file:
+      - ./backend/.env
+    environment:
+      - VAULT_PATH=/app/vault
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  website:
+    build: ./website
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./website:/app
+      - /app/node_modules
+    env_file:
+      - ./website/.env
