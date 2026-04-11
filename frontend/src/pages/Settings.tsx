@@ -33,7 +33,7 @@ export default function Settings() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const [tier, setTier] = useState<string>(localStorage.getItem('user_tier') || 'trial');
+  const [tier] = useState<string>(localStorage.getItem('user_tier') || 'trial');
   const [usage, setUsage] = useState<{ compile: number; qa: number } | null>(null);
 
   // Load current settings from backend
@@ -59,7 +59,7 @@ export default function Settings() {
   useEffect(() => {
     const licenseToken = localStorage.getItem('license_token');
     if (licenseToken) {
-      getUsage(licenseToken).then(setUsage).catch(console.error);
+      getUsage(licenseToken).then((data) => setUsage({ compile: data.usage.compile, qa: data.usage.qa })).catch(console.error);
     }
   }, []);
 

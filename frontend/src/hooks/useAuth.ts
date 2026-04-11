@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { api } from '../services/api';
 import { cloudLogin } from '../services/cloudApi';
@@ -17,33 +17,28 @@ interface AuthState {
   authMode: AuthMode;
 }
 
-export function useAuth() {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    loading: true,
-    authMode: (localStorage.getItem(AUTH_MODE_KEY) as AuthMode) || 'local',
-  });
+function loadInitialState(): AuthState {
+  const storedMode = (localStorage.getItem(AUTH_MODE_KEY) as AuthMode) || 'local';
+  const storedToken = localStorage.getItem(TOKEN_KEY);
+  const storedUser = localStorage.getItem(USER_KEY);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    const storedUser = localStorage.getItem(USER_KEY);
-
-    if (storedToken && storedUser) {
-      api.setToken(storedToken);
-
-      try {
-        const parsedUser: UserInfo = JSON.parse(storedUser);
-        setState({ user: parsedUser, loading: false, authMode: state.authMode });
-      } catch {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        api.setToken(null);
-        setState({ user: null, loading: false, authMode: state.authMode });
-      }
-    } else {
-      setState((prev) => ({ ...prev, loading: false }));
+  if (storedToken && storedUser) {
+    api.setToken(storedToken);
+    try {
+      const parsedUser: UserInfo = JSON.parse(storedUser);
+      return { user: parsedUser, loading: false, authMode: storedMode };
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      api.setToken(null);
     }
-  }, []);
+  }
+
+  return { user: null, loading: false, authMode: storedMode };
+}
+
+export function useAuth() {
+  const [state, setState] = useState<AuthState>(loadInitialState);
 
   const setAuthMode = useCallback((mode: AuthMode) => {
     localStorage.setItem(AUTH_MODE_KEY, mode);
@@ -104,8 +99,8 @@ export function useAuth() {
     localStorage.removeItem('user_tier');
     localStorage.removeItem('user_email');
 
-    setState({ user: null, loading: false, authMode: state.authMode });
-  }, [state.authMode]);
+    setState((prev) => ({ user: null, loading: false, authMode: prev.authMode }));
+  }, []);
 
   return {
     user: state.user,

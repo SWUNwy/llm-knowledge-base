@@ -1,5 +1,5 @@
 // frontend/src/services/cloudApi.ts
-const CLOUD_API_URL = process.env.CLOUD_API_URL || 'https://knowledgebase.ai';
+const CLOUD_API_URL = import.meta.env.VITE_CLOUD_API_URL || 'https://knowledgebase.ai';
 
 export interface LoginResponse {
   access_token: string;
