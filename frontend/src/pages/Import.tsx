@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { api, type IngestResponse } from '../services/api';
-import { Upload, FileText, Link, Video, GitBranch, Tag, CheckCircle, XCircle } from 'lucide-react';
+import { Upload, FileText, Link as LinkIcon, Video, GitBranch, Tag, CheckCircle, XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ErrorAlert from '../components/ErrorAlert';
 
 export default function Import() {
@@ -94,7 +95,7 @@ export default function Import() {
         {/* URL Import */}
         <form onSubmit={handleUrlSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-4">
           <div className="flex items-center gap-2 text-gray-900 font-medium">
-            <Link className="w-5 h-5 text-blue-600" />
+            <LinkIcon className="w-5 h-5 text-blue-600" />
             Import from URL
           </div>
           <input
@@ -191,7 +192,15 @@ export default function Import() {
       {/* Recent Imports */}
       {recentImports.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Recent Imports</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Imports</h2>
+            <Link
+              to="/library"
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View in Library &rarr;
+            </Link>
+          </div>
           <div className="space-y-2">
             {recentImports.map((item, idx) => (
               <div key={idx} className="flex items-center gap-3 bg-white rounded-lg border border-gray-200 px-4 py-3">
