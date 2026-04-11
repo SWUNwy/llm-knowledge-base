@@ -4,10 +4,20 @@ import { useState, useEffect } from "react";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { NAV_LINKS } from "@/lib/constants";
+import { getValidToken, getUser } from "@/lib/auth-client";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [authUser, setAuthUser] = useState<{ email: string } | null>(null);
+
+  useEffect(() => {
+    const token = getValidToken();
+    const userData = getUser();
+    setLoggedIn(!!token);
+    setAuthUser(userData ? { email: userData.email } : null);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -39,10 +49,19 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="hidden md:block">
-            <Button variant="primary" href="/login" className="text-[13px] px-5 py-2">
-              免费试用
-            </Button>
+          <div className="hidden md:flex items-center gap-3">
+            {loggedIn ? (
+              <>
+                <a href="/dashboard" className="text-sm text-text-on-dark-muted hover:text-white transition-colors">
+                  Dashboard
+                </a>
+                <span className="text-xs text-text-on-dark-muted">{authUser?.email}</span>
+              </>
+            ) : (
+              <Button variant="primary" href="/register" className="text-[13px] px-5 py-2">
+                免费试用
+              </Button>
+            )}
           </div>
 
           <button
@@ -73,9 +92,15 @@ export function Navbar() {
               </a>
             ))}
             <div className="mt-3">
-              <Button variant="primary" href="/login" className="w-full text-[13px] py-2">
-                免费试用
-              </Button>
+              {loggedIn ? (
+                <a href="/dashboard" className="block w-full text-center py-2 text-sm text-brand-blue font-medium">
+                  Dashboard
+                </a>
+              ) : (
+                <Button variant="primary" href="/register" className="w-full text-[13px] py-2">
+                  免费试用
+                </Button>
+              )}
             </div>
           </div>
         )}
