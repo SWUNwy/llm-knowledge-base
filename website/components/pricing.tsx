@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { PRICING_TIERS } from "@/lib/constants";
+import { getValidToken } from "@/lib/auth-client";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 const tierStyles = {
@@ -34,6 +36,47 @@ const tierStyles = {
 };
 
 export function Pricing() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoggedIn(!!getValidToken());
+  }, []);
+
+  const handleCheckout = async (tier: { name: string }) => {
+    if (!loggedIn) {
+      window.location.href = "/register";
+      return;
+    }
+
+    const priceMap: Record<string, string> = {
+      "个人版": process.env.NEXT_PUBLIC_STRIPE_PERSONAL_PRICE || "",
+      "专业版": process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE || "",
+      "团队版": process.env.NEXT_PUBLIC_STRIPE_TEAM_PRICE || "",
+    };
+
+    const priceId = priceMap[tier.name];
+    if (!priceId) {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    setCheckoutLoading(tier.name);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price_id: priceId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      window.location.href = "/dashboard";
+    }
+  };
+
   return (
     <section id="pricing" className="bg-white py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -99,9 +142,11 @@ export function Pricing() {
                   </div>
 
                   <button
-                    className={`w-full py-3 rounded-button text-center font-semibold cursor-pointer ${style.cta}`}
+                    onClick={() => handleCheckout(tier)}
+                    disabled={checkoutLoading === tier.name}
+                    className={`w-full py-3 rounded-button text-center font-semibold cursor-pointer disabled:opacity-50 ${style.cta}`}
                   >
-                    开始免费试用
+                    {checkoutLoading === tier.name ? "Processing..." : loggedIn ? "立即订阅" : "开始免费试用"}
                   </button>
                 </div>
               </ScrollReveal>

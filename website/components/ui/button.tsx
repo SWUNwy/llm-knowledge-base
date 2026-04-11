@@ -7,6 +7,7 @@ interface ButtonProps {
   children: ReactNode;
   href?: string;
   className?: string;
+  onClick?: () => void;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -18,7 +19,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     "border border-slate-600 text-text-on-dark font-medium hover:border-slate-400 transition-colors",
 };
 
-export function Button({ variant, children, href, className = "" }: ButtonProps) {
+export function Button({ variant, children, href, className = "", onClick }: ButtonProps) {
   const baseStyles =
     "inline-flex items-center justify-center px-7 py-3.5 rounded-button text-[15px] cursor-pointer";
   const styles = `${baseStyles} ${variantStyles[variant]} ${className}`;
@@ -31,5 +32,5 @@ export function Button({ variant, children, href, className = "" }: ButtonProps)
     );
   }
 
-  return <button className={styles}>{children}</button>;
+  return <button onClick={onClick} className={styles}>{children}</button>;
 }

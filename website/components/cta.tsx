@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { getValidToken } from "@/lib/auth-client";
 
 export function Cta() {
   return (
@@ -18,7 +19,13 @@ export function Cta() {
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.2}>
-          <Button variant="primary" href="/login" className="mb-6">
+          <Button
+            variant="primary"
+            onClick={() => {
+              window.location.href = getValidToken() ? "/dashboard" : "/register";
+            }}
+            className="mb-6"
+          >
             免费试用 14 天
           </Button>
         </ScrollReveal>
