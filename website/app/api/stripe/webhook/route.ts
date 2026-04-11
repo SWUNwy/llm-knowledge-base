@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         // Find user by customer email or create new
         const customerEmail = session.customer_details?.email;
         if (customerEmail) {
-          let user = await queryOne('SELECT * FROM users WHERE email = $1', [customerEmail]);
+          let user: { id: string } | null = await queryOne('SELECT * FROM users WHERE email = $1', [customerEmail]);
           if (!user) {
             user = await queryOne(
               `INSERT INTO users (email, password_hash) VALUES ($1, 'oauth-login')
@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
               [customerEmail]
             );
           }
+
+          if (!user) break;
 
           // Create or update subscription
           await query(

@@ -1,6 +1,6 @@
 // website/lib/auth.ts
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
