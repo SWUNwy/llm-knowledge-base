@@ -138,6 +138,23 @@ export default function DashboardPage() {
 
           <div className="bg-white/5 border border-white/10 rounded-xl p-5">
             <h3 className="text-sm font-semibold text-white mb-2">
+              Open Knowledge Base
+            </h3>
+            <p className="text-sm text-text-on-dark-muted mb-4">
+              Launch the knowledge base app to manage your documents and ask questions.
+            </p>
+            <a
+              href="http://localhost:5173"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-4 py-2 bg-gradient-to-r from-brand-blue to-brand-purple text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Launch App
+            </a>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-white mb-2">
               License Token
             </h3>
             <p className="text-sm text-text-on-dark-muted mb-4">
