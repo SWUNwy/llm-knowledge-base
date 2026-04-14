@@ -1,32 +1,60 @@
+version: '3.8'
+
 services:
   backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - ./tmp-vault:/app/vault
-    env_file:
-      - ./backend/.env
+    build:
+      context: .
+      target: backend
+    container_name: llm-kb-backend
+    restart: unless-stopped
     environment:
-      - VAULT_PATH=/app/vault
+      - vault_path=/app/.wiki
+      - app_secret_key=${APP_SECRET_KEY:-change-me-in-production}
+      - database_url=sqlite+aiosqlite:////app/.wiki/metadata.db
+      - llm_default_model=${LLM_DEFAULT_MODEL:-gpt-4o}
+      - openai_api_key=${OPENAI_API_KEY:-}
+      - anthropic_api_key=${ANTHROPIC_API_KEY:-}
+      - gemini_api_key=${GEMINI_API_KEY:-}
+      - ollama_base_url=${OLLAMA_BASE_URL:-}
+      - auto_compile=${AUTO_COMPILE:-true}
+      - compile_batch_size=${COMPILE_BATCH_SIZE:-5}
+      - max_concurrent_tasks=${MAX_CONCURRENT_TASKS:-3}
+      - chunk_token_limit=${CHUNK_TOKEN_LIMIT:-6000}
+    volumes:
+      - wiki-data:/app/.wiki
+    networks:
+      - llm-kb-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   frontend:
-    build: ./frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    build:
+      context: .
+      target: frontend
+    container_name: llm-kb-frontend
+    restart: unless-stopped
     depends_on:
-      - backend
-
-  website:
-    build: ./website
+      backend:
+        condition: service_healthy
     ports:
-      - "3000:3000"
-    volumes:
-      - ./website:/app
-      - /app/node_modules
-    env_file:
-      - ./website/.env
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - llm-kb-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  wiki-data:
+    driver: local
+
+networks:
+  llm-kb-network:
+    driver: bridge
