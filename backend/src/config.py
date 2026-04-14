@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     # 并发配置
     max_concurrent_tasks: int = 3
 
+    # MarkItDown 配置
+    markitdown_llm_image_description: bool = True
+    chunk_token_limit: int = 6000
+
     # 日志配置
     log_level: str = "INFO"
 
