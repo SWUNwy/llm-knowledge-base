@@ -125,3 +125,78 @@ class TestQAAnswerPrompt:
         assert "[[" in prompt
         assert "]]" in prompt
         assert "source" in prompt.lower() or "引用" in prompt or "来源" in prompt
+
+
+class TestCompileForFormat:
+    """Tests for format-specific prompt routing."""
+
+    def test_table_data_format(self) -> None:
+        """xlsx format uses COMPILE_TABLE_DATA template."""
+        prompt = PromptTemplates.compile_for_format(
+            source_format="xlsx",
+            title="Sales Report",
+            type="data",
+            source="local",
+            content="| Product | Revenue |\n|---|---|\n| Widget | $1000 |",
+            source_id="doc_1",
+            original_title="Q4 Report",
+        )
+        assert "Sales Report" in prompt
+        assert "Widget" in prompt
+        assert "data" in prompt.lower() or "table" in prompt.lower() or "accuracy" in prompt.lower()
+
+    def test_presentation_format(self) -> None:
+        """pptx format uses COMPILE_PRESENTATION template."""
+        prompt = PromptTemplates.compile_for_format(
+            source_format="pptx",
+            title="Quarterly Review",
+            type="presentation",
+            source="local",
+            content="## Slide 1\n\nKey point",
+            source_id="doc_2",
+            original_title="Review",
+        )
+        assert "Quarterly Review" in prompt
+        assert "Slide 1" in prompt
+
+    def test_paper_format(self) -> None:
+        """pdf format uses COMPILE_PAPER template."""
+        prompt = PromptTemplates.compile_for_format(
+            source_format="pdf",
+            title="Research Paper",
+            type="paper",
+            source="local",
+            content="# Abstract\n\nThis paper presents...",
+            source_id="doc_3",
+            original_title="Paper",
+        )
+        assert "Research Paper" in prompt
+        assert "Abstract" in prompt
+
+    def test_unknown_format_uses_generic(self) -> None:
+        """Unknown format falls back to COMPILE_DOCUMENT."""
+        prompt = PromptTemplates.compile_for_format(
+            source_format="epub",
+            title="A Novel",
+            type="book",
+            source="local",
+            content="Chapter 1 content",
+            source_id="doc_4",
+            original_title="Novel",
+        )
+        assert "A Novel" in prompt
+        assert "Chapter 1 content" in prompt
+        assert "[[" in prompt
+
+    def test_csv_uses_table_template(self) -> None:
+        """csv format uses COMPILE_TABLE_DATA template."""
+        prompt = PromptTemplates.compile_for_format(
+            source_format="csv",
+            title="Data Export",
+            type="data",
+            source="local",
+            content="Name,Value\nA,1",
+            source_id="doc_5",
+            original_title="Export",
+        )
+        assert "Data Export" in prompt

@@ -117,6 +117,112 @@ When you reference information from a source, include the source ID in brackets:
 ## Output
 Please provide your answer:"""
 
+    # 表格数据编译模板
+    COMPILE_TABLE_DATA = """You are a data analysis editor. Your task is to compile tabular data into a well-structured wiki page.
+
+## Input Document Information
+- **Title**: {title}
+- **Type**: {type}
+- **Source**: {source}
+- **Source ID**: {source_id}
+- **Original Title**: {original_title}
+
+## Raw Content (Tabular Data)
+{content}
+
+## Instructions
+1. Compile this tabular data into a clear, well-structured wiki page in **{output_language}**.
+2. **Preserve all numerical data accurately** — do not round, approximate, or omit any values.
+3. Keep tables in Markdown table format when they contain structured data.
+4. Use `[[concept name]]` for key entities, metrics, or categories that merit a separate page.
+5. Add a brief summary of the data at the beginning.
+6. Highlight key trends, totals, or notable values.
+
+## Output
+Please provide the compiled wiki page in {output_language}:"""
+
+    # 演示文稿编译模板
+    COMPILE_PRESENTATION = """You are a presentation editor. Your task is to compile slide content into a coherent, flowing wiki page.
+
+## Input Document Information
+- **Title**: {title}
+- **Type**: {type}
+- **Source**: {source}
+- **Source ID**: {source_id}
+- **Original Title**: {original_title}
+
+## Raw Slide Content
+{content}
+
+## Instructions
+1. Compile this presentation content into a coherent wiki page in **{output_language}**.
+2. **Add narrative transitions** between slide topics to create a flowing document.
+3. Expand bullet points into complete sentences and paragraphs where appropriate.
+4. Use proper Markdown formatting (headers, lists, etc.).
+5. Use `[[concept name]]` for key terms that merit a separate page.
+6. Include a brief summary at the beginning.
+
+## Output
+Please provide the compiled wiki page in {output_language}:"""
+
+    # 学术论文编译模板
+    COMPILE_PAPER = """You are an academic knowledge editor. Your task is to compile an academic paper into a well-structured wiki page.
+
+## Input Document Information
+- **Title**: {title}
+- **Type**: {type}
+- **Source**: {source}
+- **Source ID**: {source_id}
+- **Original Title**: {original_title}
+
+## Raw Content
+{content}
+
+## Instructions
+1. Compile this paper into a structured wiki page in **{output_language}**.
+2. Identify and preserve the academic structure: Abstract, Introduction, Methodology, Results, Discussion, Conclusion.
+3. Extract key findings and contributions clearly.
+4. Use `[[concept name]]` for technical terms, methods, or entities that merit a separate page.
+5. Include a brief summary at the beginning.
+6. Keep mathematical notation and formulas where present.
+
+## Output
+Please provide the compiled wiki page in {output_language}:"""
+
+    # 格式到模板的映射
+    FORMAT_TEMPLATES: dict[str, str] = {
+        "xlsx": "COMPILE_TABLE_DATA",
+        "xls": "COMPILE_TABLE_DATA",
+        "csv": "COMPILE_TABLE_DATA",
+        "pptx": "COMPILE_PRESENTATION",
+        "pdf": "COMPILE_PAPER",
+    }
+
+    @classmethod
+    def compile_for_format(
+        cls,
+        source_format: str,
+        title: str,
+        type: str,
+        source: str,
+        content: str,
+        source_id: str,
+        original_title: str,
+        output_language: str = "中文",
+    ) -> str:
+        """根据源文件格式选择编译模板"""
+        template_name = cls.FORMAT_TEMPLATES.get(source_format, "COMPILE_DOCUMENT")
+        template = getattr(cls, template_name)
+        return template.format(
+            title=title,
+            type=type,
+            source=source,
+            content=content,
+            source_id=source_id,
+            original_title=original_title,
+            output_language=output_language,
+        )
+
     @classmethod
     def compile_document(
         cls,
