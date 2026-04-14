@@ -121,10 +121,10 @@
 
 ### 3.5 部署
 
-- [ ] 编写 Dockerfile
-- [ ] 编写 docker-compose.yml
-- [ ] 编写安装脚本
-- [ ] 编写用户文档
+- [x] 编写 Dockerfile
+- [x] 编写 docker-compose.yml
+- [x] 编写安装脚本
+- [x] 编写用户文档
 
 ## 代码统计
 
