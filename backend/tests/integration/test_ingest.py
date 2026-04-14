@@ -77,16 +77,15 @@ def auth_headers(auth_token: str) -> dict[str, str]:
 class TestIngestURL:
     """Tests for POST /api/v1/ingest/url endpoint."""
 
-    @patch("src.services.ingest.WebParser")
+    @patch("src.services.ingest.MarkItDownParser")
     def test_ingest_url_success(
         self,
-        mock_web_parser: AsyncMock,
+        mock_markdown_parser: AsyncMock,
         client: TestClient,
         auth_headers: dict[str, str],
         temp_vault: Path,
     ) -> None:
         """Test successful URL import."""
-        # Mock the WebParser
         mock_parser = AsyncMock()
         mock_parser.parse_url = AsyncMock(
             return_value=ParseResult(
@@ -96,7 +95,7 @@ class TestIngestURL:
                 metadata={"source_url": "https://example.com/article"},
             )
         )
-        mock_web_parser.return_value = mock_parser
+        mock_markdown_parser.return_value = mock_parser
 
         response = client.post(
             "/api/v1/ingest/url",
@@ -114,10 +113,10 @@ class TestIngestURL:
         assert data["title"] == "Test Article"
         assert data["path"].startswith("raw/web/")
 
-    @patch("src.services.ingest.WebParser")
+    @patch("src.services.ingest.MarkItDownParser")
     def test_ingest_url_with_empty_tags(
         self,
-        mock_web_parser: AsyncMock,
+        mock_markdown_parser: AsyncMock,
         client: TestClient,
         auth_headers: dict[str, str],
     ) -> None:
@@ -130,7 +129,7 @@ class TestIngestURL:
                 content="Content here.",
             )
         )
-        mock_web_parser.return_value = mock_parser
+        mock_markdown_parser.return_value = mock_parser
 
         response = client.post(
             "/api/v1/ingest/url",
@@ -141,10 +140,10 @@ class TestIngestURL:
         assert response.status_code == 200
         assert response.json()["success"] is True
 
-    @patch("src.services.ingest.WebParser")
+    @patch("src.services.ingest.MarkItDownParser")
     def test_ingest_url_parse_failure(
         self,
-        mock_web_parser: AsyncMock,
+        mock_markdown_parser: AsyncMock,
         client: TestClient,
         auth_headers: dict[str, str],
     ) -> None:
@@ -156,7 +155,7 @@ class TestIngestURL:
                 error="Failed to fetch URL",
             )
         )
-        mock_web_parser.return_value = mock_parser
+        mock_markdown_parser.return_value = mock_parser
 
         response = client.post(
             "/api/v1/ingest/url",
