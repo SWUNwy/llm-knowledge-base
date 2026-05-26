@@ -59,7 +59,7 @@ website/
 
 Run:
 ```bash
-cd .
+cd /path/to/your-project
 npx create-next-app@latest website --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --use-npm
 ```
 
