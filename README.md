@@ -2,7 +2,7 @@
 
 > Turn scattered materials into a connected knowledge base — automatically.
 
-LLM Knowledge Base is a self-hosted web application that ingests documents (PDF, Office, web pages, videos, code, and more), converts them into clean Markdown, and uses LLM to compile them into a structured Obsidian wiki with `[[bidirectional links]]`. Then ask questions against your knowledge base — and save answers back to grow it.
+LLM Knowledge Base is a self-hosted web application that ingests documents (PDF, Office, web pages, videos, code, and more), converts them into clean Markdown via [Microsoft MarkItDown](https://github.com/microsoft/markitdown) — the open-source engine that unifies 15+ file formats — and uses LLM to compile them into a structured Obsidian wiki with `[[bidirectional links]]`. Then ask questions against your knowledge base — and save answers back to grow it.
 
 ---
 
@@ -26,7 +26,7 @@ Collect (Import) → Parse (MarkItDown) → Compile (LLM) → Wiki (Obsidian)
 
 ### Unified Ingestion Pipeline
 
-Instead of writing a separate parser for every format, the system uses **Microsoft MarkItDown** as a unified engine:
+Instead of writing a separate parser for every format, the system integrates [**Microsoft MarkItDown**](https://github.com/microsoft/markitdown) — an open-source file-to-Markdown conversion engine — as a unified parser:
 
 | Category | Formats |
 |----------|---------|
