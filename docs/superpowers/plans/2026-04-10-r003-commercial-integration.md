@@ -2304,11 +2304,11 @@ git commit -m "feat(r003): add Stripe webhook handler"
 ```bash
 # website/.env.example
 DATABASE_URL=postgresql://user:password@host:port/database
-JWT_SECRET=your-jwt-secret-here
-LICENSE_TOKEN_SECRET=your-license-token-secret-here
-STRIPE_SECRET_KEY=sk_test_your_key_here
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
-OPENAI_API_KEY=sk-your_openai_key
+JWT_SECRET=<your-jwt-secret>
+LICENSE_TOKEN_SECRET=<your-license-token-secret>
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
+STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
+OPENAI_API_KEY=<your-openai-key>
 NEXT_PUBLIC_APP_URL=https://knowledgebase.ai
 ```
 
