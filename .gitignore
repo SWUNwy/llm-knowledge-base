@@ -58,6 +58,11 @@ logs/
 
 # Obsidian Vault（不要提交用户数据）
 # vault/
+tmp-vault/
+
+# 运行时数据文件
+.license_token
+.usage_tracking.json
 
 # Superpowers brainstorming
 .superpowers/
