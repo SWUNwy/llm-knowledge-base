@@ -3,8 +3,9 @@
 .env.local
 .env.*.local
 
-# Claude Code 本地设置
-.claude/
+# Claude Code 本地设置（保留 knowledge/ 知识库）
+.claude/settings.local.json
+.claude/skills/
 
 # Python
 __pycache__/
